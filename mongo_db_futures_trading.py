@@ -1,4 +1,4 @@
-from  Binance_1 import *
+from Binance_1 import *
 import requests
 import keys
 from binance import Client
@@ -125,13 +125,13 @@ def change_pnl(id, pnl):
 def delete_user(id):
     futures_table.delete_one({"_id": id})
 
+# url = "http://ucript.herokuapp.com/futures"
 
-url = "http://ucript.herokuapp.com/getAllBalances"
+# data = {'UserId': 20}
 
-data = {'UserId': 20}
+# r = requests.post(url=url, json=data)
 
-r = requests.post(url=url, json=data)
+# print(r)
+# data = r.json()
+# print(data)
 
-print(r)
-data = r.json()
-print(data)

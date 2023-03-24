@@ -5,7 +5,12 @@ ADDRESSES = {
     "ethereum": "0x1394a8be5b8fbb43c658679a4fb16abd792adbf4",
     "binance-smart-chain": "0xab4035952e374671320d0563136dcdfd56e3c91e",
     "bitcoin": "bc1qnkhnykpqpllu6nfha6y5tuf342kx6mfuyzjpl3",
-    "tron": "TSjG8nVcsys6QBBWfv1mwan7eR9dnXLHUo"
+    "tron": "TSjG8nVcsys6QBBWfv1mwan7eR9dnXLHUo",
+    "bitcoin-cash": "bitcoincash:qqydfqyujx5ccwzz4n6yat7m0y5wvqm5aca2e9jqqq",
+    "dash": "XifmyVbGuZjtnFNTvRA7qBSnAVV1H5Y9bo",
+    "dogecoin": "DT3LMJP2997xwtbBgtb9sZ6rnuec3y32yV",
+    "litecoin": "Lc4jHTuVohmuy54KcUCfyRkoR35sYMD2WN",
+    "zcash": "t1gwTgnJ29dLNF36BrZ4Le2yJGeA488um5d"
 }
 
 BINANCE_ADDRESSES = {

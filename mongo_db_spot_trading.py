@@ -61,6 +61,7 @@ def change_balance(id, balance):
 
 def change_different_coins_balance(id, coin, balance):
     bal = get_different_coins_balances(id)
+    coin = coin.replace("USDT", "")
     bal[coin] = balance
     spot_table.update_one({'_id': id}, {"$set": {
         "different_coins_balance": bal}})
@@ -87,5 +88,3 @@ def remove_spot_order(id, spot_order):
 
 def delete_user(id):
     spot_table.delete_one({"_id": id})
-
-print(get_different_coins_balances(20))

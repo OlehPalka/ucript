@@ -1,18 +1,21 @@
 import balance_listener
 import requests
 from flask import *
+from flask_cors import cross_origin
 import json
 import uc_db_clients_sql
 import mongo_db_futures_trading
 import mongo_db_spot_trading
 import Binance_1
 import keys
+from binance import Client
 bin = Binance_1.Binance(keys.key, keys.secret)
 
 app = Flask(__name__)
 
 
 @app.route("/createUser", methods=["POST"])
+@cross_origin()
 def create():
     try:
         data = request.json()
@@ -30,6 +33,7 @@ def create():
 
 
 @app.route("/getUser", methods=["POST"])
+@cross_origin()
 def get_user():
     try:
         data = request.json()
@@ -57,17 +61,27 @@ def get_user():
 
 
 @app.route("/userProfile", methods=["POST"])
+@cross_origin()
 def user_profile():
     try:
         data = request.json()
     except:
         data = request.json
-    id = data['userId']
-    avatar = data['avatar']
-    name = data['name']
+    id = int(data['userId'])
 
-    uc_db_clients_sql.change_image(id, avatar)
-    uc_db_clients_sql.change_name(id, name)
+    try:
+        name = data['name']
+        uc_db_clients_sql.change_name(id, name)
+    except Exception:
+        name = uc_db_clients_sql.find_user_by_id(id)[-2]
+        pass
+
+    try:
+        avatar = data['avatar']
+        uc_db_clients_sql.change_image(id, avatar)
+    except Exception:
+        avatar = uc_db_clients_sql.find_user_by_id(id)[-1]
+        pass
 
     result = {"avatar": avatar,
               "name": name}
@@ -76,13 +90,14 @@ def user_profile():
 
 
 @app.route("/getAllBalances", methods=["POST"])
+@cross_origin()
 def get_all_balances():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     binance_spot_bal = float(bin.get_spot_balance("USDT"))
     spot_bal = float(mongo_db_spot_trading.get_balance(id))
     if spot_bal < binance_spot_bal:
@@ -102,6 +117,7 @@ def get_all_balances():
 
 
 @app.route("/wallet", methods=["POST"])
+@cross_origin()
 def wallet():
     try:
         data = request.json()
@@ -110,45 +126,54 @@ def wallet():
     print(data)
     id = int(data['UserId'])
 
-    all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
-    all_coins = []
-    for i in all_coins_bal:
-        all_coins.append({"symbol": i,
-                          "balance": all_coins_bal[i]})
+    crypt_api = balance_listener.get_balances()
+    usdt_balance = 0
+    for i in crypt_api:
+        if "USDT" in crypt_api[i]:
+            usdt = float(crypt_api[i]['USDT'])
+            usdt_balance += usdt
 
-    result = {"infoOfAllCoins": all_coins}
+    # crypt_api['tron']['OP'] = 20
+    # crypt_api['tron']['BTC'] = 1
+
+    result = {"balance": usdt_balance, "infoOfAllCoins": crypt_api}
 
     return json.dumps(result), 200, {"ContentType": "application/json"}
 
 
 @app.route("/spot", methods=["POST"])
+@cross_origin()
 def spot():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
 
     all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
+    spot_usdt_bal = mongo_db_spot_trading.get_balance(id)
+
     all_coins = []
     for i in all_coins_bal:
         all_coins.append({"symbol": i,
                           "balance": all_coins_bal[i]})
 
-    result = {"userId": id, "infoOfAllCoins": all_coins}
+    result = {"UserId": id, "infoOfAllCoins": all_coins,
+              'balance': spot_usdt_bal}
 
     return json.dumps(result), 200, {"ContentType": "application/json"}
 
 
 @app.route("/openSpotOrder", methods=["POST"])
+@cross_origin()
 def openSpotOrder():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     side = data["longOrShort"]
     money = data['replenishment']
@@ -165,13 +190,14 @@ def openSpotOrder():
 
 
 @app.route("/futures", methods=["POST"])
+@cross_origin()
 def futures():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
 
     positions = mongo_db_futures_trading.get_positions(id)
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
@@ -181,40 +207,45 @@ def futures():
 
 
 @app.route("/editFuturesPosition", methods=["POST"])
+@cross_origin()
 def editFuturesPosition():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     openFuturesTakeProffit = data['openFuturesTakeProffit']
     openFuturesStopLoss = data['openFuturesStopLoss']
     side = data['side']  # BUY SELL
-    QNT = data['qnt']
+    sum_stop = data['sum_stop']
+    sum_take = data['sum_take']
+    qnt_stop = (sum_stop / openFuturesStopLoss) * data['leverage']
+    qnt_take = (sum_take / openFuturesTakeProffit) * data['leverage']
     leverage = data['leverage']
     isol_cros = data['cros']  # ISOLATED CROS
     stop = "_"
     take = "_"
     if openFuturesStopLoss != 'undefined':
-        stop = bin.open_futures_stoploss_position(pair, side, QNT, float(
+        stop = bin.open_futures_stoploss_position(pair, side, qnt_stop, float(
             openFuturesStopLoss), id, leverage, isol_cros)["clientOrderId"]
     if openFuturesTakeProffit != 'undefined':
-        take = bin.open_futures_takeprofit_position(pair, side, QNT, float(
+        take = bin.open_futures_takeprofit_position(pair, side, qnt_take, float(
             openFuturesTakeProffit), id, leverage, isol_cros)["clientOrderId"]
 
     return json.dumps({"take_id": take, "stop_id": stop}), 200, {"ContentType": "application/json"}
 
 
 @app.route("/closeFuturesPosition", methods=["POST"])
+@cross_origin()
 def closeFuturesPosition():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     side = data['side']  # BUY SELL
     qnt = (data['sum'] / data['price']) * data['leverage']
@@ -226,13 +257,14 @@ def closeFuturesPosition():
 
 
 @app.route("/createFuturesPosition", methods=["POST"])
+@cross_origin()
 def createFuturesPosition():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     side = data['longOrShort']  # BUY SELL
     qnt = (data['replenishment'] / data['price']) * data['leverage']
@@ -247,13 +279,14 @@ def createFuturesPosition():
 
 
 @app.route("/cancelOrder", methods=["POST"])
+@cross_origin()
 def cancelOrder():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     order_id = data['orderId']
     bin.cancel_open_futures_order(pair, order_id)
@@ -262,13 +295,14 @@ def cancelOrder():
 
 
 @app.route("/send", methods=["POST"])
+@cross_origin()
 def send():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     pair = data['pair']
     blockchain = ["blockchain"]
     address = ["address"]
@@ -281,25 +315,48 @@ def send():
         mongo_db_spot_trading.change_balance(id, cur_bal)
     else:
         pair = pair + "USDT"
-        cur_pair_balance = mongo_db_spot_trading.get_different_coins_balances(id)[pair]
+        cur_pair_balance = mongo_db_spot_trading.get_different_coins_balances(id)[
+            pair]
         cur_pair_balance -= sum
-        mongo_db_spot_trading.change_different_coins_balance(id, pair, cur_pair_balance)
+        mongo_db_spot_trading.change_different_coins_balance(
+            id, pair, cur_pair_balance)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
 
+@app.route("/invest", methods=["POST"])
+@cross_origin()
+def invest():
+    try:
+        data = request.json()
+    except:
+        data = request.json
+
+    bin_2 = Client(
+        'plxLnpLOzxAqEBPlcptaZToVeUFDhiT2auzdznOBkmqPM7cu5oqiLIQoPuL6dcRr', '2azbW1U3E4S0aQhA9f6IP4BdhCo5TeqEBe8VtWBYfosmMMcZSzJl3lHqgXyKiwGF')
+
+    spot_bal = bin_2.get_asset_balance(asset="USDT")["free"]
+
+    futures_bal = bin_2.futures_account_balance()[7]['balance']
+    return json.dumps({"spot_invest_bal_usdt": spot_bal, "futures_invest_bal_usdt": futures_bal}), 200, {"ContentType": "application/json"}
+
+
 @app.route("/convert", methods=["POST"])
+@cross_origin()
 def convert():
     try:
         data = request.json()
     except:
         data = request.json
 
-    id = data['UserId']
+    id = int(data['UserId'])
     send_point = data['send_point']
     destination_point = data['destination_point']
     blockchain = ["blockchain"]
-    address = ["address"]
+    try:
+        address = ["address"]
+    except Exception:
+        pass
     sum = ['sum']
     if send_point == 'wallet' and destination_point == "spot":
         balance_listener.deposit(blockchain, "USDT", sum)
@@ -319,7 +376,7 @@ def convert():
         futures_bal = mongo_db_futures_trading.get_balance(id)
         bin.transfer_futures_to_spot(sum, "USDT")
         spot_bal += sum
-        
+
         mongo_db_spot_trading.change_balance(id, spot_bal)
         mongo_db_futures_trading.change_balance(id, futures_bal)
     elif send_point == 'futures' and destination_point == "wallet":
@@ -346,8 +403,5 @@ def convert():
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
         bin.withdraw("USDT", sum, address)
-    
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
-
-

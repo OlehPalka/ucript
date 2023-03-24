@@ -254,3 +254,4 @@ class Binance():
             address=address,
             amount=amount
         )
+

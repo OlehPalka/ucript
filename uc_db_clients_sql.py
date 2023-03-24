@@ -128,12 +128,12 @@ def change_name(id, name):
 
 def find_user_by_email(email):
     user_data = session.query(Clients).filter(Clients.email == email).first()
-    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.image]
+    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.name, user_data.image]
 
 
 def find_user_by_id(id):
     user_data = session.query(Clients).filter(Clients.id == id).first()
-    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.image]
+    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.name, user_data.image]
 
 
 def update_user_email(actualemail, email_to_change):
