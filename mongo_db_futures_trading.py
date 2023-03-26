@@ -125,7 +125,20 @@ def change_pnl(id, pnl):
 def delete_user(id):
     futures_table.delete_one({"_id": id})
 
-# url = "http://ucript.herokuapp.com/futures"
+
+# url = "http://3.71.185.78:5000/convert"
+
+# data = {'UserId': 20, 'send_point': 'spot',
+#         'destination_point': "wallet", "blockchain": "binance-smart-chain", 'sum': 10, 'address': "0xab4035952e374671320d0563136dcdfd56e3c91e"}
+
+# r = requests.post(url=url, json=data)
+
+# print(r)
+# data = r.json()
+# print(data)
+
+
+# url = "http://3.71.185.78:8080/userProfile"
 
 # data = {'UserId': 20}
 
@@ -135,3 +148,7 @@ def delete_user(id):
 # data = r.json()
 # print(data)
 
+# x = client.get_account()['balances']
+# for i in x:
+#     if i["asset"] == "USDT":
+#         print(i["free"])

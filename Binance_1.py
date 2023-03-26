@@ -249,9 +249,11 @@ class Binance():
             asset=asset, amount=float(amount), type="1", timeInForce='GTC')
 
     def withdraw(self, asset, amount, address):
-        self.client.withdraw(
+        res = self.client.withdraw(
             coin=asset,
             address=address,
-            amount=amount
+            amount=amount,
+            network="BSC"
         )
+        print(res)
 

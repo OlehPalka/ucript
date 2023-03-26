@@ -17,7 +17,12 @@ BINANCE_ADDRESSES = {
     "ethereum": "0xe5f91924d3754e757cfb39d11fbc3a4300867057",
     "binance-smart-chain": "0xe5f91924d3754e757cfb39d11fbc3a4300867057",
     "bitcoin": "1KP9Z5Eb9P1PMZhuff9g22UFw1yc431hfe",
-    "tron": "TCBMQ1ZGA1tNRyZfhwfyyCDBubwzb4LP5P"
+    "tron": "TCBMQ1ZGA1tNRyZfhwfyyCDBubwzb4LP5P",
+    "bitcoin-cash": '1KP9Z5Eb9P1PMZhuff9g22UFw1yc431hfe',
+    "dash": "XhaWF2UtSrXkdW77GUy4gswSY9oJXA6tgb",
+    "dogecoin": "DKYUYThVgCmydNpypcz2Q9mxuz6CCLTYFF",
+    "litecoin": "LcdAYci2sZCPg9cif78BC6NwNi6b3YuGA7",
+    "zcash": "t1UbJMNYMh2ywvR3S2gzgMgsHzAS9zRyZ5g"
 }
 
 SUPPORTED_COINS = {

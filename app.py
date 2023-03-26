@@ -8,6 +8,7 @@ import mongo_db_futures_trading
 import mongo_db_spot_trading
 import Binance_1
 import keys
+import psycopg2
 from binance import Client
 bin = Binance_1.Binance(keys.key, keys.secret)
 
@@ -98,18 +99,25 @@ def get_all_balances():
         data = request.json
 
     id = int(data['UserId'])
-    binance_spot_bal = float(bin.get_spot_balance("USDT"))
     spot_bal = float(mongo_db_spot_trading.get_balance(id))
-    if spot_bal < binance_spot_bal:
-        spot_bal = binance_spot_bal
-        mongo_db_spot_trading.change_balance(id, spot_bal)
-    print(spot_bal)
     all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
-    print(all_coins_bal)
+
+    binance_balances = Client(keys.key, keys.secret).get_account()['balances']
+    for coin_info in binance_balances:
+        coin_name = coin_info['asset']
+        if coin_name == "USDT":
+            spot_bal = float(coin_info['free'])
+        else:
+            amount = float(coin_info['free'])
+            if amount > 0:
+                all_coins_bal[coin_name] = amount
+
+    mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
+    mongo_db_spot_trading.change_balance(id, spot_bal)
+
     fut_balance = mongo_db_futures_trading.get_balance(id)
-    print(fut_balance)
     crypto_api_bal = balance_listener.get_balances()
-    print(crypto_api_bal)
+
     result = {"spotUsdtBalance": spot_bal, "AllCoinsSpotBalance": all_coins_bal, "futuresBalance": fut_balance,
               "crypto_api_bal": crypto_api_bal}
 
@@ -152,7 +160,20 @@ def spot():
     id = int(data['UserId'])
 
     all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
-    spot_usdt_bal = mongo_db_spot_trading.get_balance(id)
+    spot_usdt_bal = float(mongo_db_spot_trading.get_balance(id))
+
+    binance_balances = Client(keys.key, keys.secret).get_account()['balances']
+    for coin_info in binance_balances:
+        coin_name = coin_info['asset']
+        if coin_name == "USDT":
+            spot_usdt_bal = float(coin_info['free'])
+        else:
+            amount = float(coin_info['free'])
+            if amount > 0:
+                all_coins_bal[coin_name] = amount
+
+    mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
+    mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
 
     all_coins = []
     for i in all_coins_bal:
@@ -344,6 +365,7 @@ def invest():
 @app.route("/convert", methods=["POST"])
 @cross_origin()
 def convert():
+    "поменять ЮСДТ на любую монетку"
     try:
         data = request.json()
     except:
@@ -352,12 +374,13 @@ def convert():
     id = int(data['UserId'])
     send_point = data['send_point']
     destination_point = data['destination_point']
-    blockchain = ["blockchain"]
+    blockchain = data["blockchain"]
+    sum = data["sum"]
+
     try:
         address = ["address"]
     except Exception:
         pass
-    sum = ['sum']
     if send_point == 'wallet' and destination_point == "spot":
         balance_listener.deposit(blockchain, "USDT", sum)
     elif send_point == 'wallet' and destination_point == "futures":
@@ -405,3 +428,13 @@ def convert():
         bin.withdraw("USDT", sum, address)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
+
+
+@app.route("/")
+@cross_origin()
+def main():
+    return "HI"
+
+
+if __name__ == "__main__":
+	app.run()

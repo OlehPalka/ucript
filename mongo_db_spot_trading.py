@@ -65,6 +65,11 @@ def change_different_coins_balance(id, coin, balance):
     bal[coin] = balance
     spot_table.update_one({'_id': id}, {"$set": {
         "different_coins_balance": bal}})
+    
+
+def change_all_different_coins_balance(id, balances):
+    spot_table.update_one({'_id': id}, {"$set": {
+        "different_coins_balance": balances}})
 
 
 def add_spot_order(id, spot_order):
