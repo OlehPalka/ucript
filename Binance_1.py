@@ -256,4 +256,3 @@ class Binance():
             network="BSC"
         )
         print(res)
-
