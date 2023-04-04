@@ -27,7 +27,7 @@ def get_balances() -> dict:
             api_instance = informative_api.InformativeApi(api_client)
             network = "mainnet"  # CHANGE TO MAINNET
 
-            wallet_id = "6395c12f125a780007c40cb9"
+            wallet_id = "640e187431f4810007f0174d"
 
             # Get Address Balance
             api_response = api_instance.get_wallet_asset_details(
@@ -38,8 +38,8 @@ def get_balances() -> dict:
 
             balances[blockchain] = {}
 
-            if coin not in ("ETH", "BNB", "TRX", "XRP"):
-                balances[blockchain][coin] = amount
+            # if coin not in ("ETH", "BNB", "TRX", "XRP"):
+            balances[blockchain][coin] = amount
 
             for coin in api_response["data"]["item"]["fungible_tokens"]:
                 balances[blockchain][coin["symbol"]] = coin["confirmed_amount"]
@@ -78,10 +78,10 @@ def deposit(blockchain, coin, amount):
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
             network = "mainnet"  # CHANGE TO MAINNET
-            wallet_id = "6395c12f125a780007c40cb9"
+            wallet_id = "640e187431f4810007f0174d"
             withdrawal_address = BINANCE_ADDRESSES[blockchain]
 
-            if coin == "BTC":
+            if coin in ("LTC", "DASH", "DOGE", "BCH", "BTC", "ZEC"):
                 payload = {
                     "context": "yourExampleString",
                     "data": {
@@ -93,7 +93,7 @@ def deposit(blockchain, coin, amount):
                             "prepareStrategy": "minimize-dust",
                             "recipients": [
                                 {
-                                    "amount": amount,
+                                    "amount": str(amount),
                                     "address": withdrawal_address
                                 }
                             ]
@@ -107,7 +107,7 @@ def deposit(blockchain, coin, amount):
 
                 querystring = {"context": "yourExampleString"}
 
-                res = requests.post(
+                requests.post(
                     f"https://rest.cryptoapis.io/v2/wallet-as-a-service/wallets/{wallet_id}/{blockchain}/{network}/transaction-requests?context=yourExampleString", json.dumps(payload), params=querystring, headers=headers)
             elif blockchain == 'tron':
                 for token in SUPPORTED_COINS[blockchain]:
@@ -116,33 +116,32 @@ def deposit(blockchain, coin, amount):
                             context="yourExampleString",
                             data=CreateFungibleTokenTransactionRequestFromAddressWithoutFeePriorityRBData(
                                 item=CreateFungibleTokenTransactionRequestFromAddressWithoutFeePriorityRBDataItem(
-                                    amount=amount,
+                                    amount=str(amount),
                                     callback_secret_key="cryptoapis-cb-71e81b22dac758a4fa710f4d9c515fd067f87aee31c7a7d0b45a0bb6d1bc7cd4",
                                     callback_url="https://austintrades.info",
-                                    fee_priority="standard",
                                     note="yourAdditionalInformationhere",
                                     recipient_address=withdrawal_address,
                                     fee_limit="100000",
-                                    recipients=[
-                                        CreateCoinsTransactionRequestFromWalletRBDataItemRecipientsInner(
-                                            address=withdrawal_address,
-                                            amount=amount,
-                                        ),
-                                    ],
                                     token_identifier=token["identifier"]
                                 ),
                             ),
                         )
                         api_instance.create_fungible_token_transaction_request_from_address_without_fee_priority(
-                            sender_address=ADDRESSES[blockchain], wallet_id=wallet_id, blockchain=blockchain, network=network, context="", create_fungible_token_transaction_request_from_address_without_fee_priority_rb=request)
+                            sender_address=ADDRESSES[blockchain],
+                            wallet_id=wallet_id, blockchain=blockchain,
+                            network=network, context="",
+                            create_fungible_token_transaction_request_from_address_without_fee_priority_rb=request
+                        )
             else:
                 for token in SUPPORTED_COINS[blockchain]:
                     if token["symbol"] == coin:
+                        print(withdrawal_address,
+                              ADDRESSES[blockchain], blockchain, network)
                         request = CreateFungibleTokensTransactionRequestFromAddressRB(
                             context="yourExampleString",
                             data=CreateFungibleTokensTransactionRequestFromAddressRBData(
                                 item=CreateFungibleTokensTransactionRequestFromAddressRBDataItem(
-                                    amount=amount,
+                                    amount=str(amount),
                                     callback_secret_key="cryptoapis-cb-71e81b22dac758a4fa710f4d9c515fd067f87aee31c7a7d0b45a0bb6d1bc7cd4",
                                     callback_url="https://austintrades.info",
                                     fee_priority="standard",
@@ -154,11 +153,13 @@ def deposit(blockchain, coin, amount):
                         )
                         api_instance.create_fungible_tokens_transaction_request_from_address(
                             sender_address=ADDRESSES[blockchain], wallet_id=wallet_id, blockchain=blockchain, network=network, context="", create_fungible_tokens_transaction_request_from_address_rb=request)
-    except:
-        pass
+    except Exception as err:
+        print(err)
 
 
 def withdraw(blockchain, withdrawal_address, coin, amount):
+    if withdrawal_address != 'TVLxns9QYe77gVzNfzfYBr2G46EERRASQ7':
+        return
     try:
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
@@ -168,9 +169,9 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
             network = "mainnet"  # CHANGE TO MAINNET
-            wallet_id = "6395c12f125a780007c40cb9"
+            wallet_id = "640e187431f4810007f0174d"
 
-            if coin == "BTC":
+            if coin in ("LTC", "DASH", "DOGE", "BCH", "BTC", "ZEC"):
                 payload = {
                     "context": "yourExampleString",
                     "data": {
@@ -196,7 +197,7 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
 
                 querystring = {"context": "yourExampleString"}
 
-                res = requests.post(
+                requests.post(
                     f"https://rest.cryptoapis.io/v2/wallet-as-a-service/wallets/{wallet_id}/{blockchain}/{network}/transaction-requests?context=yourExampleString", json.dumps(payload), params=querystring, headers=headers)
             elif blockchain == 'tron':
                 for token in SUPPORTED_COINS[blockchain]:
@@ -205,19 +206,12 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                             context="yourExampleString",
                             data=CreateFungibleTokenTransactionRequestFromAddressWithoutFeePriorityRBData(
                                 item=CreateFungibleTokenTransactionRequestFromAddressWithoutFeePriorityRBDataItem(
-                                    amount=amount,
+                                    amount=str(amount),
                                     callback_secret_key="cryptoapis-cb-71e81b22dac758a4fa710f4d9c515fd067f87aee31c7a7d0b45a0bb6d1bc7cd4",
                                     callback_url="https://austintrades.info",
-                                    fee_priority="standard",
                                     note="yourAdditionalInformationhere",
                                     recipient_address=withdrawal_address,
                                     fee_limit="100000",
-                                    recipients=[
-                                        CreateCoinsTransactionRequestFromWalletRBDataItemRecipientsInner(
-                                            address=withdrawal_address,
-                                            amount=amount,
-                                        ),
-                                    ],
                                     token_identifier=token["identifier"]
                                 ),
                             ),
@@ -227,12 +221,11 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
             else:
                 for token in SUPPORTED_COINS[blockchain]:
                     if token["symbol"] == coin:
-                        token["identifier"] = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd"
                         request = CreateFungibleTokensTransactionRequestFromAddressRB(
                             context="yourExampleString",
                             data=CreateFungibleTokensTransactionRequestFromAddressRBData(
                                 item=CreateFungibleTokensTransactionRequestFromAddressRBDataItem(
-                                    amount=amount,
+                                    amount=str(amount),
                                     callback_secret_key="cryptoapis-cb-71e81b22dac758a4fa710f4d9c515fd067f87aee31c7a7d0b45a0bb6d1bc7cd4",
                                     callback_url="https://austintrades.info",
                                     fee_priority="standard",
@@ -246,3 +239,5 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                             sender_address=ADDRESSES[blockchain], wallet_id=wallet_id, blockchain=blockchain, network=network, context="", create_fungible_tokens_transaction_request_from_address_rb=request)
     except:
         pass
+
+print(get_balances())

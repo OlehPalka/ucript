@@ -1,3 +1,5 @@
+from Binance_1 import *
+import requests
 import keys
 from binance import Client
 from pymongo import *
@@ -11,7 +13,8 @@ client = Client(keys.key, keys.secret)
 
 def cancel_open_futures_order(SYMBOL, clientOrderId):
     client.futures_cancel_order(symbol=SYMBOL,
-                                     origClientOrderId=clientOrderId)
+                                origClientOrderId=clientOrderId)
+
 
 def add_new_client(id, email, balance=0, positions={}, limit_positions={}, PNL=0):
     futures_table.insert_one({
@@ -51,6 +54,11 @@ def get_pnl(id):
 def change_balance(id, balance):
     futures_table.update_one({'_id': id}, {"$set": {
                              "balance": balance}})
+    
+
+def terminate_all_limit_position(id):
+    futures_table.update_one({'_id': id}, {"$set": {
+                             "limit_orders": {}}})
 
 
 def add_new_position(id, pair, leverage, position_size, entry_point, side, cros_lim):
@@ -123,27 +131,66 @@ def delete_user(id):
     futures_table.delete_one({"_id": id})
 
 
-# add_new_position(1, "SOLUSDT", 20, 3, 21, "BUY")
+# add_new_limit_position(20, '1', "BTCUSDT", 20, 20000, 1, "BUY", "LIMIT", "CROS")
+# add_new_limit_position(20, '2', "ETHUSDT", 10, 1800, 10, "BUY", "LIMIT", "CROS")
+# add_new_limit_position(20, '3', "OPUSDT", 30, 2, 143, "BUY", "LIMIT", "CROS")
 
 
-# print(get_positions(1, "OPUSDT"))
+# url = "http://3.68.105.88:8080/getAllBalances"
 
-# print(futures_table.find_one(1))
+# data = {'UserId': 20}
+# r = requests.post(url=url, json=data)
 
-# print(futures_table.find_one(1))
-# add_new_position(1, "OPUSDT", 20, 3, 21, "BUY")
-# print(futures_table.find_one(1))
-# remove_position(1, "BUY", "OPUSDT")
-# print(get_positions(1, "OPUSDT"))
-# print(futures_table.find_one(1))
-# add_new_position(1, "OPUSDT", 20, 3, 21, "BUY")
-# print(futures_table.find_one(1))
-# print(get_positions(1, "OPUSDT"))
+# print(r)
+# data = r.json()
 
-# delete_user(1)
-# add_new_client(1, "palka@gmail.com")
-# change_balance(1, 5)
-# print(futures_table.find_one(1))
-# print(get_limit_positions(1))
-# add_new_position(1, 'SOLUSDT', 20, 10, 20, "BUY", 'CROS')
-# print(get_positions(1))
+# x = Binance("35ZQ7Ibk0D1WCOqZhpFeHPiMq4LJnst5ebKXAkSAWbl5G6OEMKAxhCLaBDxTPYkj",
+#             "1ukw60JafDMnGg3abgRwtb1J10P0K4aApYwPo8w5AOzHwD1lErZNME4WzEofMGab")
+# print(x.withdraw("USDT", 10, '0xab4035952e374671320d0563136dcdfd56e3c91e'))
+
+# url = "http://ucript.herokuapp.com/getAllBalances"
+
+# data = {'UserId': 20}
+
+# r = requests.post(url=url, json=data)
+
+# print(r)
+# data = r.json()
+# print(data)
+
+# url = "http://ucript.herokuapp.com/spot"
+
+# data = {'UserId': 20}
+
+# r = requests.post(url=url, json=data)
+
+# print(r)
+# data = r.json()
+# print(data)
+
+# url = "http://ucript.herokuapp.com/convert"
+
+# data = {'UserId': 20, 'send_point': 'spot', 'destination_point': 'wallet',
+#         "blockchain": "binance-smart-chain", "sum": 10}
+
+# r = requests.post(url=url, json=data)
+
+# print(r)
+# data = r.json()
+# print(data)
+
+
+# url = "http://3.71.185.78:8080/userProfile"
+
+# data = {'UserId': 20}
+
+# r = requests.post(url=url, json=data)
+
+# print(r)
+# data = r.json()
+# print(data)
+
+# x = client.get_account()['balances']
+# for i in x:
+#     if i["asset"] == "USDT":
+#         print(i["free"])

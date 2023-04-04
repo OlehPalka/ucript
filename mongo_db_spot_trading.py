@@ -61,9 +61,15 @@ def change_balance(id, balance):
 
 def change_different_coins_balance(id, coin, balance):
     bal = get_different_coins_balances(id)
+    coin = coin.replace("USDT", "")
     bal[coin] = balance
     spot_table.update_one({'_id': id}, {"$set": {
         "different_coins_balance": bal}})
+    
+
+def change_all_different_coins_balance(id, balances):
+    spot_table.update_one({'_id': id}, {"$set": {
+        "different_coins_balance": balances}})
 
 
 def add_spot_order(id, spot_order):
@@ -87,13 +93,3 @@ def remove_spot_order(id, spot_order):
 
 def delete_user(id):
     spot_table.delete_one({"_id": id})
-
-# delete_user(1)
-# add_new_client(1, "palka@gmail.com", '123')
-# change_balance(1, 100)
-
-
-# print(get_different_coins_balances(1))
-# print(get_balance(1))
-add_pending_trans(1, 'bitcoin', "BTC", '14881337', 1)
-print(get_pending_transactions(1))
