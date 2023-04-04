@@ -1,2 +1,3 @@
-key = "35ZQ7Ibk0D1WCOqZhpFeHPiMq4LJnst5ebKXAkSAWbl5G6OEMKAxhCLaBDxTPYkj"
-secret = "1ukw60JafDMnGg3abgRwtb1J10P0K4aApYwPo8w5AOzHwD1lErZNME4WzEofMGab"
+
+key = "6JZSSZpXOATgjlRAW8M2w0TzGvAcczCGU7CK6auVbc0mEzXLYuvTQmJygUZypucZ"
+secret = "DzqSzE952OIxzmuVb4iAnwZfN12w5wfwYe7jfJFt9B0AdDMrtBnwITda16rmVtBo"

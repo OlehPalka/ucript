@@ -1,4 +1,3 @@
-import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,13 +5,14 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import *
 
 settings = {
-    'pguser': 'yifkcjpdvonawy',
-    'pgpasswd': "53931c1c4bcc9dfaec51e48d7c065f5810eb290a3be13c71ba887cb33732c90f",
-    'pghost': "ec2-54-73-22-169.eu-west-1.compute.amazonaws.com",
-    'pgport': 5432,
-    'pgdb': 'd8ou8fqg9nf8jh'
+    'pguser': 'postgres',
+    'pgpasswd': "1234509876",
+    'pghost': "localhost",
+    'pgport': 5433,
+    'pgdb': 'postgres'
 }
 
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -90,6 +90,8 @@ session = get_session()
 Base = declarative_base()
 
 
+
+
 class Clients(Base):
     __tablename__ = "clients"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -105,7 +107,6 @@ def create():
 
 
 create()
-
 
 def add_client(email, password, pin):
     client = Clients(email=email, password=password,
@@ -125,16 +126,14 @@ def change_name(id, name):
     user.name = name
     session.commit()
 
-
 def find_user_by_email(email):
     user_data = session.query(Clients).filter(Clients.email == email).first()
-    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.name, user_data.image]
+    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.image]
 
 
 def find_user_by_id(id):
     user_data = session.query(Clients).filter(Clients.id == id).first()
-    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.name, user_data.image]
-
+    return [user_data.id, user_data.email, user_data.password, user_data.pin, user_data.image]
 
 def update_user_email(actualemail, email_to_change):
     user = session.query(Clients).filter(Clients.email == actualemail).first()
@@ -154,7 +153,9 @@ def update_user_password(email, new_password):
     session.commit()
 
 
+
 def delete_user(email):
     user = session.query(Clients).filter(Clients.email == email).first()
     session.delete(user)
     session.commit()
+

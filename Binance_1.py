@@ -1,59 +1,21 @@
+import time
 import requests
 from binance import Client
 import uuid
 import keys
 from mongo_db_spot_trading import *
-from binance.helpers import round_step_size
-
-QUANTITY_PRECISIONS = {}
-PRICE_PRECISIONS = {}
-TICK_SIZES = {}
-info = Client().futures_exchange_info()
-
-for symbol_info in info["symbols"]:
-    QUANTITY_PRECISIONS[symbol_info["symbol"]
-                        ] = symbol_info["quantityPrecision"]
-    PRICE_PRECISIONS[symbol_info["symbol"]] = symbol_info["pricePrecision"]
-    for symbol_filter in symbol_info["filters"]:
-        if symbol_filter["filterType"] == "PRICE_FILTER":
-            TICK_SIZES[symbol_info["symbol"]] = symbol_filter["tickSize"]
-
-client = Client(
-    api_key=keys.key, api_secret=keys.secret)
-
-
-for symbol in QUANTITY_PRECISIONS.keys():
-    try:
-        client.futures_change_position_mode(**{
-            "dualSidePosition": True,
-            "symbol": symbol
-        })
-    except:
-        pass
-
-
-def get_rounded_price(symbol: str, price: float) -> float:
-    return round_step_size(price, TICK_SIZES[symbol])
-
-
-def get_rounded_quantity(symbol: str, quantity: float) -> float:
-    return round(quantity, QUANTITY_PRECISIONS[symbol])
-
 
 class Binance():
 
     def __init__(self, api_key, api_secret) -> None:
         self.api_key = api_key
         self.api_secret = api_secret
-        try:
-            self.client = Client(api_key, api_secret)
-            pos_mode = self.client.futures_get_position_mode()
-            if not pos_mode["dualSidePosition"]:
-                self.client.futures_change_position_mode(**{
-                    "dualSidePosition": True
-                })
-        except Exception as e:
-            print(e)
+        self.client = Client(api_key, api_secret)
+        pos_mode = self.client.futures_get_position_mode()
+        if not pos_mode["dualSidePosition"]:
+            self.client.futures_change_position_mode(**{
+                "dualSidePosition": True
+            })
 
     def generate_client_order_id(self, user_id, leverage, isol_cross='CROS'):
         order_id = str(uuid.uuid4())
@@ -75,7 +37,7 @@ class Binance():
 
     def get_user_lev_from_client_order_id(self, client_order_id):
         return int(client_order_id[6:12])
-
+    
     def get_user_position_type_from_client_order_id(self, client_order_id):
         if client_order_id[13] == '0':
             return "isol"
@@ -83,7 +45,6 @@ class Binance():
             return 'cros'
 
     def open_futures_position(self, SYMBOL, SIDE, QTY, TYPE, id, leverage, isol_cross, PRICE=0):
-        QTY = get_rounded_quantity(SYMBOL, QTY)
         self.client.futures_change_leverage(symbol=SYMBOL, leverage=1)
         if SIDE == "BUY":
             positionS = "LONG"
@@ -113,7 +74,6 @@ class Binance():
         return response
 
     def open_futures_takeprofit_position(self, SYMBOL, SIDE, QTY, PRICE, id, leverage, isol_cross):
-        QTY = get_rounded_quantity(SYMBOL, QTY)
         if SIDE == "BUY":
             side_for_order = "SELL"
             positionSide = "LONG"
@@ -134,7 +94,6 @@ class Binance():
         return response
 
     def open_futures_stoploss_position(self, SYMBOL, SIDE, QTY, PRICE, id, leverage, isol_cross):
-        QTY = get_rounded_quantity(SYMBOL, QTY)
         if SIDE == "BUY":
             side_for_order = "SELL"
             positionSide = "LONG"
@@ -159,7 +118,6 @@ class Binance():
                                          origClientOrderId=clientOrderId)
 
     def close_part_of_open_position_market(self, SYMBOL, SIDE, QTY, id, leverage):
-        QTY = get_rounded_quantity(SYMBOL, QTY)
         if SIDE == "BUY":
             side_for_order = "SELL"
             positionSide = "LONG"
@@ -183,6 +141,7 @@ class Binance():
     def futures_convert_to_1x(self, leverage, margin):
         return margin * leverage
 
+
     def futures_calculate_profit_percentage(self, entry_price, symbol_pair, side, leverage):
         key = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol_pair}"
         data = requests.get(key)
@@ -197,10 +156,9 @@ class Binance():
         return margin * (percents * 0.01)
 
     def open_spot_position(self, SYMBOL, SIDE, QTY, TYPE, id, PRICE=0):
-        QTY = get_rounded_quantity(SYMBOL, QTY)
-        print(QTY)
         if TYPE == "MARKET":
             balance = get_balance(id)
+            
 
             response = self.client.create_order(
                 symbol=SYMBOL,
@@ -221,7 +179,8 @@ class Binance():
                 balance += money_from_position
             change_balance(id, balance)
             change_different_coins_balance(id, SYMBOL, pair_qnt_balance)
-
+            
+            
         else:
             response = self.client.create_order(
                 symbol=SYMBOL,
@@ -248,11 +207,38 @@ class Binance():
         self.client.futures_account_transfer(
             asset=asset, amount=float(amount), type="1", timeInForce='GTC')
 
-    def withdraw(self, asset, amount, address):
-        res = self.client.withdraw(
+    def withdraw(self, asset, amount, address, id, сеть):
+        self.client.withdraw(
             coin=asset,
             address=address,
-            amount=amount,
-            network="BSC"
+            amount=amount
         )
-        print(res)
+        add_pending_trans(id, сеть, asset, address, amount)
+
+
+bin = Binance(keys.key, keys.secret)
+# print(bin.open_futures_position("OPUSDT", "BUY", 2.5, "MARKET", 1, 20))
+# time.sleep(1)
+# print(bin.open_futures_position("OPUSDT", "BUY", 2.5, "MARKET", 1, 20))
+# time.sleep(1)
+# print(bin.close_part_of_open_position_market("OPUSDT", "BUY", 2.5, 1, 20))
+# time.sleep(1)
+# print(bin.open_futures_position("OPUSDT", "SELL", 2.5, "MARKET", 1, 20))
+# time.sleep(1)
+# print(bin.open_futures_position("OPUSDT", "SELL", 2.5, "MARKET", 1, 20))
+# time.sleep(1)
+# print(bin.close_part_of_open_position_market("OPUSDT", "SELL", 2.5, 1, 20))
+# time.sleep(1)
+
+# print(bin.open_futures_position("OPUSDT", "BUY", 25, "MARKET", 1, 20, 'CROS'))
+# print(bin.cancel_open_futures_order(
+#     "OPUSDT", "00000100002041488b-a21a-e2f0f8ff5d5a"))
+# print(bin.cancel_open_futures_order(
+#     "OPUSDT", "000001000020d145cc-ab47-e1d67b193118"))
+
+# print(bin.open_futures_takeprofit_position("OPUSDT", "BUY", 25, 1.85, 1, 20))
+
+print(bin.open_futures_stoploss_position("OPUSDT", "BUY", 25, 2, 1, 20, "CROS"))
+
+# print(bin.open_spot_position("SOLUSDT", "BUY", 1, "MARKET", 1))
+
