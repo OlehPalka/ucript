@@ -248,12 +248,16 @@ class Binance():
         self.client.futures_account_transfer(
             asset=asset, amount=float(amount), type="1", timeInForce='GTC')
 
-    def withdraw(self, asset, amount, address):
+    def withdraw(self, asset, amount, address, block_chain):
+        if block_chain == 'binance-smart-chain':
+            network = "BSC"
+        elif block_chain == 'ethereum':
+            network = "ETH"
         res = self.client.withdraw(
             coin=asset,
             address=address,
             amount=amount,
-            network="BSC"
+            network=network
         )
 
 

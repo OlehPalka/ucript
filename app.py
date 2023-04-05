@@ -331,7 +331,7 @@ def send():
     address = ["address"]
     sum = ['sum']
 
-    bin.withdraw(pair, sum, address)
+    bin.withdraw(pair, sum, address, blockchain)
     if pair == "USDT":
         cur_bal = mongo_db_spot_trading.get_balance(id)
         cur_bal -= sum
@@ -386,7 +386,7 @@ def convert():
         address = data["address"]
     except Exception:
         pass
-    
+
     if send_point == 'wallet' and destination_point == "spot":
         balance_listener.deposit(blockchain, "USDT", sum)
     elif send_point == 'wallet' and destination_point == "futures":
@@ -413,17 +413,17 @@ def convert():
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'spot' and destination_point == "wallet":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal -= sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'spot' and destination_point == "invest":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal -= sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'wallet' and destination_point == "invest":
         balance_listener.withdraw(blockchain, address, "USDT", sum)
     elif send_point == 'futures' and destination_point == "invest":
@@ -431,20 +431,20 @@ def convert():
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "spot":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal += sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "wallet":
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "futures":
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal += sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_spot_to_futures(sum, "USDT")
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
 
     elif send_point == 'spot' and destination_point == 'spot':
         asset_from = data["asset_from"]
