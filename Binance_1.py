@@ -249,12 +249,16 @@ class Binance():
             asset=asset, amount=float(amount), type="1", timeInForce='GTC')
 
     def withdraw(self, asset, amount, address):
+        print(asset)
+        print(amount)
+        print(address)
         res = self.client.withdraw(
             coin=asset,
             address=address,
             amount=amount,
             network="BSC"
         )
+        print(res)
 
 
 # x = Binance("35ZQ7Ibk0D1WCOqZhpFeHPiMq4LJnst5ebKXAkSAWbl5G6OEMKAxhCLaBDxTPYkj",

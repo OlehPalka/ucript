@@ -386,6 +386,7 @@ def convert():
     # spot_bal -= sum
     # mongo_db_spot_trading.change_balance(id, spot_bal)
     address = ["address"]
+    print(address)
     bin.withdraw("USDT", sum, address)
 
     # try:
