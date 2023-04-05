@@ -252,7 +252,8 @@ class Binance():
         res = self.client.withdraw(
             coin=asset,
             address=address,
-            amount=amount
+            amount=amount,
+            network="BSC"
         )
 
 
