@@ -239,5 +239,3 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                             sender_address=ADDRESSES[blockchain], wallet_id=wallet_id, blockchain=blockchain, network=network, context="", create_fungible_tokens_transaction_request_from_address_rb=request)
     except:
         pass
-
-print(get_balances())

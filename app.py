@@ -327,22 +327,14 @@ def send():
 
     id = int(data['UserId'])
     pair = data['pair']
-    blockchain = ["blockchain"]
-    address = ["address"]
-    sum = ['sum']
+    blockchain = data["blockchain"]
+    address = data["address"]
+    sum = data['sum']
 
     bin.withdraw(pair, sum, address, blockchain)
-    if pair == "USDT":
-        cur_bal = mongo_db_spot_trading.get_balance(id)
-        cur_bal -= sum
-        mongo_db_spot_trading.change_balance(id, cur_bal)
-    else:
-        pair = pair + "USDT"
-        cur_pair_balance = mongo_db_spot_trading.get_different_coins_balances(id)[
-            pair]
-        cur_pair_balance -= sum
-        mongo_db_spot_trading.change_different_coins_balance(
-            id, pair, cur_pair_balance)
+    cur_bal = mongo_db_spot_trading.get_balance(id)
+    cur_bal -= sum
+    mongo_db_spot_trading.change_balance(id, cur_bal)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
