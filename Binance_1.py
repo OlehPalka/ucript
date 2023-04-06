@@ -259,8 +259,3 @@ class Binance():
             amount=amount,
             network=network
         )
-
-
-# x = Binance("35ZQ7Ibk0D1WCOqZhpFeHPiMq4LJnst5ebKXAkSAWbl5G6OEMKAxhCLaBDxTPYkj",
-#             "1ukw60JafDMnGg3abgRwtb1J10P0K4aApYwPo8w5AOzHwD1lErZNME4WzEofMGab")
-# print(x.withdraw("USDT", 10, '0xab4035952e374671320d0563136dcdfd56e3c91e'))

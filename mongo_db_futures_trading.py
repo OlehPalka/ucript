@@ -54,7 +54,7 @@ def get_pnl(id):
 def change_balance(id, balance):
     futures_table.update_one({'_id': id}, {"$set": {
                              "balance": balance}})
-    
+
 
 def terminate_all_limit_position(id):
     futures_table.update_one({'_id': id}, {"$set": {
@@ -129,68 +129,3 @@ def change_pnl(id, pnl):
 
 def delete_user(id):
     futures_table.delete_one({"_id": id})
-
-
-# add_new_limit_position(20, '1', "BTCUSDT", 20, 20000, 1, "BUY", "LIMIT", "CROS")
-# add_new_limit_position(20, '2', "ETHUSDT", 10, 1800, 10, "BUY", "LIMIT", "CROS")
-# add_new_limit_position(20, '3', "OPUSDT", 30, 2, 143, "BUY", "LIMIT", "CROS")
-
-
-# url = "http://3.68.105.88:8080/getAllBalances"
-
-# data = {'UserId': 20}
-# r = requests.post(url=url, json=data)
-
-# print(r)
-# data = r.json()
-
-# x = Binance("35ZQ7Ibk0D1WCOqZhpFeHPiMq4LJnst5ebKXAkSAWbl5G6OEMKAxhCLaBDxTPYkj",
-#             "1ukw60JafDMnGg3abgRwtb1J10P0K4aApYwPo8w5AOzHwD1lErZNME4WzEofMGab")
-# print(x.withdraw("USDT", 10, '0xab4035952e374671320d0563136dcdfd56e3c91e'))
-
-# url = "http://ucript.herokuapp.com/getAllBalances"
-
-# data = {'UserId': 20}
-
-# r = requests.post(url=url, json=data)
-
-# print(r)
-# data = r.json()
-# print(data)
-
-# url = "http://ucript.herokuapp.com/spot"
-
-# data = {'UserId': 20}
-
-# r = requests.post(url=url, json=data)
-
-# print(r)
-# data = r.json()
-# print(data)
-
-# url = "http://ucript.herokuapp.com/convert"
-
-# data = {'UserId': 20, 'send_point': 'spot', 'destination_point': 'wallet',
-#         "blockchain": "binance-smart-chain", "sum": 10}
-
-# r = requests.post(url=url, json=data)
-
-# print(r)
-# data = r.json()
-# print(data)
-
-
-# url = "http://3.71.185.78:8080/userProfile"
-
-# data = {'UserId': 20}
-
-# r = requests.post(url=url, json=data)
-
-# print(r)
-# data = r.json()
-# print(data)
-
-# x = client.get_account()['balances']
-# for i in x:
-#     if i["asset"] == "USDT":
-#         print(i["free"])
