@@ -325,16 +325,22 @@ def send():
     except:
         data = request.json
 
-    id = int(data['UserId'])
-    pair = data['pair']
-    blockchain = data["blockchain"]
-    address = data["address"]
-    sum = data['sum']
+    bin_2 = Binance_1.Binance(
+        'plxLnpLOzxAqEBPlcptaZToVeUFDhiT2auzdznOBkmqPM7cu5oqiLIQoPuL6dcRr', '2azbW1U3E4S0aQhA9f6IP4BdhCo5TeqEBe8VtWBYfosmMMcZSzJl3lHqgXyKiwGF')
 
-    bin.withdraw(pair, sum, address, blockchain)
-    cur_bal = mongo_db_spot_trading.get_balance(id)
-    cur_bal -= sum
-    mongo_db_spot_trading.change_balance(id, cur_bal)
+    id = int(data['UserId'])
+    send_point = data['send_point']
+    blockchain = data["blockchain"]
+    sum = data["sum"]
+    pair = data['pair']
+    address = data['address']
+
+    if send_point == "spot":
+        bin.withdraw(pair, sum, address, blockchain)
+    elif send_point == "wallet":
+        balance_listener.withdraw(blockchain, address, pair, sum)
+    elif send_point == "invest":
+        bin_2.withdraw(pair, sum, address, blockchain)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
@@ -365,7 +371,7 @@ def convert():
     except:
         data = request.json
 
-    bin_2 = Client(
+    bin_2 = Binance_1.Binance(
         'plxLnpLOzxAqEBPlcptaZToVeUFDhiT2auzdznOBkmqPM7cu5oqiLIQoPuL6dcRr', '2azbW1U3E4S0aQhA9f6IP4BdhCo5TeqEBe8VtWBYfosmMMcZSzJl3lHqgXyKiwGF')
 
     id = int(data['UserId'])
