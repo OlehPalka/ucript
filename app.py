@@ -8,8 +8,9 @@ import mongo_db_futures_trading
 import mongo_db_spot_trading
 import Binance_1
 import keys
+import time
+import os
 import psycopg2
-from balance_listener import *
 from binance import Client
 bin = Binance_1.Binance(keys.key, keys.secret)
 
@@ -100,42 +101,26 @@ def get_all_balances():
         data = request.json
 
     id = int(data['UserId'])
-    spot_usdt_bal = float(mongo_db_spot_trading.get_balance(id))
+    spot_bal = float(mongo_db_spot_trading.get_balance(id))
     all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
 
     binance_balances = Client(keys.key, keys.secret).get_account()['balances']
     for coin_info in binance_balances:
         coin_name = coin_info['asset']
         if coin_name == "USDT":
-            amount = float(coin_info['free'])
-            spot_usdt_bal = float(coin_info['free'])
-            all_coins_bal[coin_name] = amount
+            spot_bal = float(coin_info['free'])
         else:
             amount = float(coin_info['free'])
             if amount > 0:
                 all_coins_bal[coin_name] = amount
 
     mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
-    mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
-
-    for coin_info in binance_balances:
-        coin_name = coin_info['asset']
-        amount = float(coin_info['free'])
-        if amount > 0:
-            try:
-                pair = coin_name + "USDT"
-                key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
-                data = requests.get(key)
-                data = data.json()
-                cur_price = float(data['price'])
-                spot_usdt_bal += cur_price * amount
-            except Exception:
-                continue
+    mongo_db_spot_trading.change_balance(id, spot_bal)
 
     fut_balance = mongo_db_futures_trading.get_balance(id)
     crypto_api_bal = balance_listener.get_balances()
 
-    result = {"spotUsdtBalance": spot_usdt_bal, "AllCoinsSpotBalance": all_coins_bal, "futuresBalance": fut_balance,
+    result = {"spotUsdtBalance": spot_bal, "AllCoinsSpotBalance": all_coins_bal, "futuresBalance": fut_balance,
               "crypto_api_bal": crypto_api_bal}
 
     return json.dumps(result), 200, {"ContentType": "application/json"}
@@ -157,16 +142,6 @@ def wallet():
         if "USDT" in crypt_api[i]:
             usdt = float(crypt_api[i]['USDT'])
             usdt_balance += usdt
-
-    # for i in crypt_api:
-    #     for coin in crypt_api[i]:
-    #         pair = coin + "USDT"
-    #         amount = float(crypt_api[i][coin])
-    #         key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
-    #         data = requests.get(key)
-    #         data = data.json()
-    #         cur_price = float(data['price'])
-    #         usdt_balance += cur_price * amount
 
     # crypt_api['tron']['OP'] = 20
     # crypt_api['tron']['BTC'] = 1
@@ -193,9 +168,7 @@ def spot():
     for coin_info in binance_balances:
         coin_name = coin_info['asset']
         if coin_name == "USDT":
-            amount = float(coin_info['free'])
             spot_usdt_bal = float(coin_info['free'])
-            all_coins_bal[coin_name] = amount
         else:
             amount = float(coin_info['free'])
             if amount > 0:
@@ -203,20 +176,6 @@ def spot():
 
     mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
     mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
-
-    for coin_info in binance_balances:
-        coin_name = coin_info['asset']
-        amount = float(coin_info['free'])
-        try:
-            if amount > 0:
-                pair = coin_name + "USDT"
-                key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
-                data = requests.get(key)
-                data = data.json()
-                cur_price = float(data['price'])
-                spot_usdt_bal += cur_price * amount
-        except Exception:
-            continue
 
     all_coins = []
     for i in all_coins_bal:
@@ -367,25 +326,15 @@ def send():
         data = request.json
 
     id = int(data['UserId'])
-    coin = data['coin']
-    blockchain = ["blockchain"]
-    address = ["address"]
-    sum = ['sum']
+    pair = data['pair']
+    blockchain = data["blockchain"]
+    address = data["address"]
+    sum = data['sum']
 
-    withdraw(blockchain, address, coin, sum)
-
-    # bin.withdraw(pair, sum, address, id, blockchain)
-    # if pair == "USDT":
-    #     cur_bal = mongo_db_spot_trading.get_balance(id)
-    #     cur_bal -= sum
-    #     mongo_db_spot_trading.change_balance(id, cur_bal)
-    # else:
-    #     pair = pair + "USDT"
-    #     cur_pair_balance = mongo_db_spot_trading.get_different_coins_balances(id)[
-    #         pair]
-    #     cur_pair_balance -= sum
-    #     mongo_db_spot_trading.change_different_coins_balance(
-    #         id, pair, cur_pair_balance)
+    bin.withdraw(pair, sum, address, blockchain)
+    cur_bal = mongo_db_spot_trading.get_balance(id)
+    cur_bal -= sum
+    mongo_db_spot_trading.change_balance(id, cur_bal)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
@@ -399,11 +348,11 @@ def invest():
         data = request.json
 
     bin_2 = Client(
-        'plxLnpLOzxAqEBPlcptaZToVeUFDhiT2auzdznOBkmqPM7cu5oqiLIQoPuL6dcRr', '2azbW1U3E4S0aQhA9f6IP4BdhCo5TeqEBe8VtWBYfosmMMcZSzJl3lHqgXyKiwGF')
+        'V457hQz0cdzFQofH6Jhxisrr8jOrlUiXz4Ecr7joMPj9C4ewRFzm8lua54AVnRpp', 'k39qRHaN8FVauw7A4Hh1ucBysVZSALfB6KtQNu5ZVuu8bxiYSP05ituKCrYnGbrd')
 
     spot_bal = bin_2.get_asset_balance(asset="USDT")["free"]
 
-    futures_bal = bin_2.futures_account_balance()[8]['balance']
+    futures_bal = bin_2.futures_account_balance()[7]['balance']
     return json.dumps({"spot_invest_bal_usdt": spot_bal, "futures_invest_bal_usdt": futures_bal}), 200, {"ContentType": "application/json"}
 
 
@@ -426,9 +375,10 @@ def convert():
     sum = data["sum"]
 
     try:
-        address = ["address"]
+        address = data["address"]
     except Exception:
         pass
+
     if send_point == 'wallet' and destination_point == "spot":
         balance_listener.deposit(blockchain, "USDT", sum)
     elif send_point == 'wallet' and destination_point == "futures":
@@ -455,17 +405,17 @@ def convert():
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'spot' and destination_point == "wallet":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal -= sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'spot' and destination_point == "invest":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal -= sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'wallet' and destination_point == "invest":
         balance_listener.withdraw(blockchain, address, "USDT", sum)
     elif send_point == 'futures' and destination_point == "invest":
@@ -473,57 +423,41 @@ def convert():
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
-        bin.withdraw("USDT", sum, address)
+        bin.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "spot":
         spot_bal = float(mongo_db_spot_trading.get_balance(id))
         spot_bal += sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "wallet":
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "futures":
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal += sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_spot_to_futures(sum, "USDT")
-        bin_2.withdraw("USDT", sum, address)
+        bin_2.withdraw("USDT", sum, address, blockchain)
+
+    elif send_point == 'spot' and destination_point == 'spot':
+        asset_from = data["asset_from"]
+        asset_to = data["asset_to"]
+        balance_from = bin.get_spot_balance('USDT')
+        bin.open_spot_position(asset_from + 'USDT', 'SELL', sum, 'MARKET', id)
+        time.sleep(3)
+        balance_to = bin.get_spot_balance('USDT')
+        qty = (float(balance_to) - float(balance_from)) / float(bin.client.latest_information_for_symbol(
+            symbol=asset_to + 'USDT')["result"][0]["last_price"]) * 0.99
+        bin.open_spot_position(asset_to + 'USDT', 'BUY', qty, 'MARKET', id)
+    elif send_point == 'wallet' and destination_point == 'wallet':
+        asset_from = data["asset_from"]
+        asset_to = data["asset_to"]
+        os.system(
+            f'python3 convert_wallet.py {id} {blockchain} {sum} {asset_from} {asset_to}')
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
 
-@app.route("/close_all_futures_positons",  methods=["POST"])
+@app.route("/")
 @cross_origin()
-def close_all_futures_positons():
-    try:
-        data = request.json()
-    except:
-        data = request.json
-
-    id = int(data['UserId'])
-
-    positions = mongo_db_futures_trading.get_positions(id)
-
-    for pose in positions:
-        coin_poses = positions[pose]
-        if coin_poses["BUY"] != []:
-            pair = pose
-            side = "BUY"
-            qnt = coin_poses["BUY"][1]
-            leverage = coin_poses["BUY"][0]
-            bin.close_part_of_open_position_market(
-                pair, side, qnt, id, leverage)
-        elif coin_poses["SELL"] != []:
-            pair = pose
-            side = "SELL"
-            qnt = coin_poses["SELL"][1]
-            leverage = coin_poses["SELL"][0]
-            bin.close_part_of_open_position_market(
-                pair, side, qnt, id, leverage)
-
-    mongo_db_futures_trading.terminate_all_limit_position(id)
-
-    positions = mongo_db_futures_trading.get_positions(id)
-    open_orders = mongo_db_futures_trading.get_limit_positions(id)
-    balance = mongo_db_futures_trading.get_balance(id)
-
-    return json.dumps({'positions': positions, "open_orders": open_orders, "balance": balance}), 200, {"ContentType": "application/json"}
+def main():
+    return "HI"
