@@ -18,6 +18,7 @@ for symbol_info in info["symbols"]:
         if symbol_filter["filterType"] == "PRICE_FILTER":
             TICK_SIZES[symbol_info["symbol"]] = symbol_filter["tickSize"]
 
+
 client = Client(
     api_key=keys.key, api_secret=keys.secret)
 
@@ -37,7 +38,7 @@ def get_rounded_price(symbol: str, price: float) -> float:
 
 
 def get_rounded_quantity(symbol: str, quantity: float) -> float:
-    return round(quantity, QUANTITY_PRECISIONS[symbol])
+    return round(float(quantity), QUANTITY_PRECISIONS[symbol])
 
 
 class Binance():
