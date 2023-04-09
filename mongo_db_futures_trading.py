@@ -78,6 +78,11 @@ def remove_position(id, side: str, pair):
     poses[pair][side] = []
     futures_table.update_one({'_id': id}, {"$set": {
                              "positions": poses}})
+    
+
+def remove_all_positions(id):
+    futures_table.update_one({'_id': id}, {"$set": {
+                             "positions": {}}})
 
 
 def get_all_take_profits_for_pair(id, pair, side):
@@ -129,3 +134,4 @@ def change_pnl(id, pnl):
 
 def delete_user(id):
     futures_table.delete_one({"_id": id})
+

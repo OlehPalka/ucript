@@ -506,6 +506,7 @@ def close_all_futures_positons():
     id = int(data['UserId'])
 
     positions = mongo_db_futures_trading.get_positions(id)
+    limit_positions = mongo_db_futures_trading.get_limit_positions(id)
 
     for pose in positions:
         coin_poses = positions[pose]
@@ -524,7 +525,14 @@ def close_all_futures_positons():
             bin.close_part_of_open_position_market(
                 pair, side, qnt, id, leverage)
 
+    for pair in limit_positions:
+        for side in limit_positions[pair]:
+            for type in limit_positions[pair][side]:
+                for order_id in limit_positions[pair][side][type]:
+                    bin.cancel_open_futures_order(order_id)
+
     mongo_db_futures_trading.terminate_all_limit_position(id)
+    mongo_db_futures_trading.remove_all_positions(id)
 
     positions = mongo_db_futures_trading.get_positions(id)
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
