@@ -190,7 +190,7 @@ def spot():
         else:
             amount = float(coin_info['free'])
             if amount > 0:
-                all_coins_bal[coin_name] = amount
+                all_coins_bal[coin_name] = f"{amount:.9f}"
 
     mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
     mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
