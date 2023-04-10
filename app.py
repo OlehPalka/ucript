@@ -435,7 +435,7 @@ def convert():
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         bin.transfer_futures_to_spot(sum, "USDT")
         spot_bal += sum
-
+        futures_bal -= sum
         mongo_db_spot_trading.change_balance(id, spot_bal)
         mongo_db_futures_trading.change_balance(id, futures_bal)
     elif send_point == 'futures' and destination_point == "wallet":
