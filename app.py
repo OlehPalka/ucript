@@ -529,7 +529,7 @@ def close_all_futures_positons():
         for side in limit_positions[pair]:
             for type in limit_positions[pair][side]:
                 for order_id in limit_positions[pair][side][type]:
-                    bin.cancel_open_futures_order(order_id)
+                    bin.cancel_open_futures_order(pair, order_id)
 
     mongo_db_futures_trading.terminate_all_limit_position(id)
     mongo_db_futures_trading.remove_all_positions(id)
