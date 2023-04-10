@@ -533,7 +533,7 @@ def close_all_futures_positons():
 
     mongo_db_futures_trading.terminate_all_limit_position(id)
     mongo_db_futures_trading.remove_all_positions(id)
-    mongo_db_futures_trading.change_balance(id, 0)
+    # mongo_db_futures_trading.change_balance(id, 0)
 
     positions = mongo_db_futures_trading.get_positions(id)
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
