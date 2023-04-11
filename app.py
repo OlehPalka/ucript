@@ -542,6 +542,48 @@ def close_all_futures_positons():
     return json.dumps({'positions': positions, "open_orders": open_orders, "balance": balance}), 200, {"ContentType": "application/json"}
 
 
+@app.route("/min_open_price",  methods=["POST"])
+@cross_origin()
+def min_open_price():
+    try:
+        data = request.json()
+    except:
+        data = request.json
+
+    pair = int(data['pair'])
+
+    from binance.helpers import round_step_size
+
+    QUANTITY_PRECISIONS = {}
+    info = Client().futures_exchange_info()
+
+    for symbol_info in info["symbols"]:
+        QUANTITY_PRECISIONS[symbol_info["symbol"]
+                            ] = symbol_info["quantityPrecision"]
+
+    qnt = QUANTITY_PRECISIONS[pair]
+
+    if qnt == 0:
+        min_qnt = 1
+    elif qnt == 1:
+        min_qnt = 0.1
+    elif qnt == 2:
+        min_qnt = 0.01
+    elif qnt == 3:
+        min_qnt == 0.001
+
+    key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
+    data = requests.get(key)
+    data = data.json()
+    cur_price = float(data['price'])
+
+    min_sum = cur_price * min_qnt
+    if min_sum < 10:
+        min_sum = 10
+
+    return json.dumps({"min_sum": min_sum}), 200, {"ContentType": "application/json"}
+
+
 @app.route("/")
 @cross_origin()
 def main():
