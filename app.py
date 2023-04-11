@@ -276,8 +276,8 @@ def editFuturesPosition():
     side = data['side']  # BUY SELL
     sum_stop = data['sum_stop']
     sum_take = data['sum_take']
-    qnt_stop = (sum_stop / openFuturesStopLoss) * data['leverage']
-    qnt_take = (sum_take / openFuturesTakeProffit) * data['leverage']
+    qnt_stop = mongo_db_futures_trading.get_positions(id)[pair][side][1]
+    qnt_take = mongo_db_futures_trading.get_positions(id)[pair][side][1]
     leverage = data['leverage']
     isol_cros = data['cros']  # ISOLATED CROS
     stop = "_"
