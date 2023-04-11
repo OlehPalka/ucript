@@ -13,11 +13,13 @@ info = Client().futures_exchange_info()
 for symbol_info in info["symbols"]:
     QUANTITY_PRECISIONS[symbol_info["symbol"]
                         ] = symbol_info["quantityPrecision"]
+    if symbol_info["quantityPrecision"] == 3:
+        QUANTITY_PRECISIONS[symbol_info["symbol"]
+                            ] = 5
     PRICE_PRECISIONS[symbol_info["symbol"]] = symbol_info["pricePrecision"]
     for symbol_filter in symbol_info["filters"]:
         if symbol_filter["filterType"] == "PRICE_FILTER":
             TICK_SIZES[symbol_info["symbol"]] = symbol_filter["tickSize"]
-
 
 client = Client(
     api_key=keys.key, api_secret=keys.secret)
