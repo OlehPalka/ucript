@@ -550,7 +550,7 @@ def min_open_price():
     except:
         data = request.json
 
-    pair = int(data['pair'])
+    pair = data['pair']
 
     from binance.helpers import round_step_size
 
