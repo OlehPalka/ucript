@@ -552,8 +552,6 @@ def min_open_price():
 
     pair = data['pair']
 
-    from binance.helpers import round_step_size
-
     QUANTITY_PRECISIONS = {}
     info = Client().futures_exchange_info()
 
@@ -570,7 +568,7 @@ def min_open_price():
     elif qnt == 2:
         min_qnt = 0.01
     elif qnt == 3:
-        min_qnt == 0.001
+        min_qnt = 0.001
 
     key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
     data = requests.get(key)
