@@ -217,7 +217,7 @@ def spot():
         if "USDT" in coin_info['symbol']:
             coin = coin_info['symbol'].replace("USDT", "")
             if coin in all_coins_bal:
-                price = float(coin_info['prcie'])
+                price = float(coin_info['price'])
                 amount = float(all_coins_bal[coin]['free'])
                 spot_usdt_bal += price * amount
 
