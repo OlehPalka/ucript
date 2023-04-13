@@ -181,6 +181,10 @@ def spot():
     spot_usdt_bal = float(mongo_db_spot_trading.get_balance(id))
 
     binance_balances = Client(keys.key, keys.secret).get_account()['balances']
+
+    prices = Client(
+        keys.key, keys.secret).get_all_tickers()
+
     for coin_info in binance_balances:
         coin_name = coin_info['asset']
         if coin_name == "USDT":
@@ -195,19 +199,27 @@ def spot():
     mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
     mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
 
-    for coin_info in binance_balances:
-        coin_name = coin_info['asset']
-        amount = float(coin_info['free'])
-        try:
-            if amount > 0:
-                pair = coin_name + "USDT"
-                key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
-                data = requests.get(key)
-                data = data.json()
-                cur_price = float(data['price'])
-                spot_usdt_bal += cur_price * amount
-        except Exception:
-            continue
+    # for coin_info in binance_balances:
+    #     coin_name = coin_info['asset']
+    #     amount = float(coin_info['free'])
+    #     try:
+    #         if amount > 0:
+    #             pair = coin_name + "USDT"
+    #             key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
+    #             data = requests.get(key)
+    #             data = data.json()
+    #             cur_price = float(data['price'])
+    #             spot_usdt_bal += cur_price * amount
+    #     except Exception:
+    #         continue
+
+    for coin_info in prices:
+        if "USDT" in coin_info['symbol']:
+            coin = coin_info['symbol'].replace("USDT", "")
+            if coin in all_coins_bal:
+                price = float(coin_info['prcie'])
+                amount = float(all_coins_bal[coin]['free'])
+                spot_usdt_bal += price * amount
 
     all_coins = []
     for i in all_coins_bal:
