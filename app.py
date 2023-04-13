@@ -149,7 +149,6 @@ def wallet():
         data = request.json()
     except:
         data = request.json
-    print(data)
     id = int(data['UserId'])
 
     crypt_api = balance_listener.get_balances()
@@ -218,7 +217,7 @@ def spot():
             coin = coin_info['symbol'].replace("USDT", "")
             if coin in all_coins_bal:
                 price = float(coin_info['price'])
-                amount = float(all_coins_bal[coin]['free'])
+                amount = float(all_coins_bal[coin])
                 spot_usdt_bal += price * amount
 
     all_coins = []

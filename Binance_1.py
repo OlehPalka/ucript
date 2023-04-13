@@ -17,7 +17,7 @@ for symbol_info in info["symbols"]:
     for symbol_filter in symbol_info["filters"]:
         if symbol_filter["filterType"] == "PRICE_FILTER":
             TICK_SIZES[symbol_info["symbol"]] = symbol_filter["tickSize"]
-print(Client(keys.key, keys.secret).get_account()['balances'])
+            
 client = Client(
     api_key=keys.key, api_secret=keys.secret)
 
