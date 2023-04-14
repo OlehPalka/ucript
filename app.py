@@ -12,6 +12,7 @@ import time
 import os
 import psycopg2
 from binance import Client
+import time
 bin = Binance_1.Binance(keys.key, keys.secret)
 
 app = Flask(__name__)
@@ -169,6 +170,9 @@ def wallet():
 @app.route("/spot", methods=["POST"])
 @cross_origin()
 def spot():
+
+    start_time = time.time()
+
     try:
         data = request.json()
     except:
@@ -176,25 +180,30 @@ def spot():
 
     id = int(data['UserId'])
 
-    all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
+    # all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
 
     binance_balances = Client(keys.key, keys.secret).get_account()['balances']
 
     prices = Client(
         keys.key, keys.secret).get_all_tickers()
 
-    for coin_info in binance_balances:
-        coin_name = coin_info['asset']
-        if coin_name == "USDT":
-            amount = float(coin_info['free'])
-            spot_usdt_bal = float(coin_info['free'])
-            all_coins_bal[coin_name] = amount
-        else:
-            amount = float(coin_info['free'])
-            if amount > 0:
-                all_coins_bal[coin_name] = f"{amount:.9f}"
+    all_coins_bal = {}
+    for i in binance_balances:
+        if float(i["free"]) > 0:
+            all_coins_bal[i['asset']] = i["free"]
 
-    mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
+    # for coin_info in binance_balances:
+    #     coin_name = coin_info['asset']
+    #     if coin_name == "USDT":
+    #         amount = float(coin_info['free'])
+    #         spot_usdt_bal = float(coin_info['free'])
+    #         all_coins_bal[coin_name] = amount
+    #     else:
+    #         amount = float(coin_info['free'])
+    #         if amount > 0:
+    #             all_coins_bal[coin_name] = f"{amount:.9f}"
+
+    # mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
 
     # for coin_info in binance_balances:
     #     coin_name = coin_info['asset']
@@ -209,7 +218,11 @@ def spot():
     #             spot_usdt_bal += cur_price * amount
     #     except Exception:
     #         continue
-
+    try:
+        spot_usdt_bal = float(all_coins_bal["USDT"])
+    except Exception:
+        spot_usdt_bal = 0
+        
     for coin_info in prices:
         if "USDT" in coin_info['symbol']:
             coin = coin_info['symbol'].replace("USDT", "")
@@ -225,6 +238,7 @@ def spot():
 
     result = {"UserId": id, "infoOfAllCoins": all_coins,
               'balance': spot_usdt_bal}
+    print("--- %s seconds ---" % (time.time() - start_time))
 
     return json.dumps(result), 200, {"ContentType": "application/json"}
 
