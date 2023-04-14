@@ -177,7 +177,6 @@ def spot():
     id = int(data['UserId'])
 
     all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
-    spot_usdt_bal = float(mongo_db_spot_trading.get_balance(id))
 
     binance_balances = Client(keys.key, keys.secret).get_account()['balances']
 
@@ -196,7 +195,6 @@ def spot():
                 all_coins_bal[coin_name] = f"{amount:.9f}"
 
     mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
-    mongo_db_spot_trading.change_balance(id, spot_usdt_bal)
 
     # for coin_info in binance_balances:
     #     coin_name = coin_info['asset']
