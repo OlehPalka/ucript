@@ -222,7 +222,7 @@ def spot():
         spot_usdt_bal = float(all_coins_bal["USDT"])
     except Exception:
         spot_usdt_bal = 0
-        
+
     for coin_info in prices:
         if "USDT" in coin_info['symbol']:
             coin = coin_info['symbol'].replace("USDT", "")
@@ -413,7 +413,7 @@ def invest():
 
     spot_bal = bin_2.get_asset_balance(asset="USDT")["free"]
 
-    futures_bal = bin_2.futures_account_balance()[7]['balance']
+    futures_bal = bin_2.futures_account_balance(recvWindow=5000)[7]['balance']
     return json.dumps({"spot_invest_bal_usdt": spot_bal, "futures_invest_bal_usdt": futures_bal}), 200, {"ContentType": "application/json"}
 
 
