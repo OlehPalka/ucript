@@ -17,7 +17,7 @@ for symbol_info in info["symbols"]:
     for symbol_filter in symbol_info["filters"]:
         if symbol_filter["filterType"] == "PRICE_FILTER":
             TICK_SIZES[symbol_info["symbol"]] = symbol_filter["tickSize"]
-            
+
 client = Client(
     api_key=keys.key, api_secret=keys.secret)
 
@@ -257,5 +257,6 @@ class Binance():
             coin=asset,
             address=address,
             amount=amount,
-            network=network
+            network=network,
+            recvWindow=50000
         )
