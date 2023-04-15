@@ -243,6 +243,6 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
 # print(deposit('tron', 'USDT', 20.8))
 # print(deposit('tron', "USDT", 10))
 # print(deposit('tron', "USDT", 10))
-print(get_balances())
+# print(get_balances())
 # print(withdraw("binance-smart-chain", "0x5c3060ecaf38519a7c14e77d2c20802a6f5e119f", "USDT", 15))
 # print(get_balances())
