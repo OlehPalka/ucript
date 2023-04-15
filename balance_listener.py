@@ -158,8 +158,6 @@ def deposit(blockchain, coin, amount):
 
 
 def withdraw(blockchain, withdrawal_address, coin, amount):
-    if withdrawal_address != 'TVLxns9QYe77gVzNfzfYBr2G46EERRASQ7':
-        return
     try:
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
@@ -237,5 +235,14 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                         )
                         api_instance.create_fungible_tokens_transaction_request_from_address(
                             sender_address=ADDRESSES[blockchain], wallet_id=wallet_id, blockchain=blockchain, network=network, context="", create_fungible_tokens_transaction_request_from_address_rb=request)
-    except:
+    except Exception as e:
+        print(e)
         pass
+
+
+# print(deposit('tron', 'USDT', 20.8))
+# print(deposit('tron', "USDT", 10))
+# print(deposit('tron', "USDT", 10))
+print(get_balances())
+# print(withdraw("binance-smart-chain", "0x5c3060ecaf38519a7c14e77d2c20802a6f5e119f", "USDT", 15))
+# print(get_balances())
