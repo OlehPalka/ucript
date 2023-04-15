@@ -253,6 +253,8 @@ class Binance():
             network = "BSC"
         elif block_chain == 'ethereum':
             network = "ETH"
+        elif block_chain == 'tron':
+            network = "TRX"
         res = self.client.withdraw(
             coin=asset,
             address=address,
