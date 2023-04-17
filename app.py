@@ -199,7 +199,7 @@ def wallet():
 
     for coin_info in prices:
         if "USDT" in coin_info['symbol']:
-            coin = coin_info['symbol']
+            coin = coin_info['symbol'].replace("USDT", "")
             if coin in wallet_coins_bals:
                 price = float(coin_info['price'])
                 amount = float(wallet_coins_bals[coin])
