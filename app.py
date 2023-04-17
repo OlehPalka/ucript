@@ -2,6 +2,7 @@ import balance_listener
 import requests
 from flask import *
 from flask_cors import cross_origin
+from balance_listener import *
 import json
 import uc_db_clients_sql
 import mongo_db_futures_trading
@@ -185,8 +186,24 @@ def wallet():
             usdt = float(crypt_api[i]['USDT'])
             usdt_balance += usdt
 
-    # crypt_api['tron']['OP'] = 20
-    # crypt_api['tron']['BTC'] = 1
+    prices = Client(
+        keys.key, keys.secret).get_all_tickers()
+
+    wallet_bals = get_balances()
+    wallet_coins_bals = {}
+    for blockch in wallet_bals:
+        for coin_name in wallet_bals[blockch]:
+            if coin_name != "USDT":
+                amount = wallet_bals[blockch][coin_name]
+                wallet_coins_bals[coin_name] = amount
+
+    for coin_info in prices:
+        if "USDT" in coin_info['symbol']:
+            coin = coin_info['symbol']
+            if coin in wallet_coins_bals:
+                price = float(coin_info['price'])
+                amount = float(wallet_coins_bals[coin])
+                usdt_balance += price * amount
 
     result = {"balance": usdt_balance, "infoOfAllCoins": crypt_api}
 
