@@ -84,6 +84,7 @@ class Binance():
 
     def open_futures_position(self, SYMBOL, SIDE, QTY, TYPE, id, leverage, isol_cross, PRICE=0):
         QTY = get_rounded_quantity(SYMBOL, QTY)
+        PRICE = get_rounded_price(SYMBOL, PRICE)
         self.client.futures_change_leverage(symbol=SYMBOL, leverage=1)
         if SIDE == "BUY":
             positionS = "LONG"
@@ -114,6 +115,7 @@ class Binance():
 
     def open_futures_takeprofit_position(self, SYMBOL, SIDE, QTY, PRICE, id, leverage, isol_cross):
         QTY = get_rounded_quantity(SYMBOL, QTY)
+        PRICE = get_rounded_price(SYMBOL, PRICE)
         if SIDE == "BUY":
             side_for_order = "SELL"
             positionSide = "LONG"
@@ -135,6 +137,7 @@ class Binance():
 
     def open_futures_stoploss_position(self, SYMBOL, SIDE, QTY, PRICE, id, leverage, isol_cross):
         QTY = get_rounded_quantity(SYMBOL, QTY)
+        PRICE = get_rounded_price(SYMBOL, PRICE)
         if SIDE == "BUY":
             side_for_order = "SELL"
             positionSide = "LONG"
