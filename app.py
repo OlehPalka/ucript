@@ -324,6 +324,22 @@ def futures():
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
     balance = mongo_db_futures_trading.get_balance(id)
 
+    for pair in open_orders:
+        for side in open_orders[pair]:
+            if open_orders[pair][side]['LIMIT'] == {}:
+                del open_orders[pair][side]['LIMIT']
+            if open_orders[pair][side]['STOP_MARKET'] == {}:
+                del open_orders[pair][side]['STOP_MARKET']
+            if open_orders[pair][side]['TAKE_PROFIT_MARKET'] == {}:
+                del open_orders[pair][side]['TAKE_PROFIT_MARKET']
+            if open_orders[pair][side]['LIQUIDATION'] == {}:
+                del open_orders[pair][side]['LIQUIDATION']
+
+            if open_orders[pair][side] == {}:
+                del open_orders[pair][side]
+        if open_orders[pair] == {}:
+            del open_orders[pair]
+
     return json.dumps({"balance": balance, "positions": positions, "openOrders": open_orders}), 200, {"ContentType": "application/json"}
 
 
