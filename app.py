@@ -485,7 +485,7 @@ def convert():
         data = request.json
 
     bin_2 = Binance_1.Binance(
-        'plxLnpLOzxAqEBPlcptaZToVeUFDhiT2auzdznOBkmqPM7cu5oqiLIQoPuL6dcRr', '2azbW1U3E4S0aQhA9f6IP4BdhCo5TeqEBe8VtWBYfosmMMcZSzJl3lHqgXyKiwGF')
+        'V457hQz0cdzFQofH6Jhxisrr8jOrlUiXz4Ecr7joMPj9C4ewRFzm8lua54AVnRpp', 'k39qRHaN8FVauw7A4Hh1ucBysVZSALfB6KtQNu5ZVuu8bxiYSP05ituKCrYnGbrd')
 
     id = int(data['UserId'])
     send_point = data['send_point']
@@ -604,7 +604,7 @@ def close_all_futures_positons():
 
     mongo_db_futures_trading.terminate_all_limit_position(id)
     mongo_db_futures_trading.remove_all_positions(id)
-    # mongo_db_futures_trading.change_balance(id, 0)
+    mongo_db_futures_trading.change_balance(id, 0)
 
     positions = mongo_db_futures_trading.get_positions(id)
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
