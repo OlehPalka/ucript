@@ -641,6 +641,11 @@ def close_one_futures_position():
     bin.close_part_of_open_position_market(
         pair, side, qnt, id, leverage)
 
+    if side == "BUY":
+        side = "SELL"
+    else:
+        side = "BUY"
+        
     try:
         for type in limit_positions[pair][side]:
             if type == "STOP_MARKET"or type == "TAKE_PROFIT_MARKET":
