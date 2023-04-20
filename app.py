@@ -184,8 +184,11 @@ def wallet():
     usdt_balance = 0
     for i in crypt_api:
         if "USDT" in crypt_api[i]:
-            usdt = float(crypt_api[i]['USDT'])
-            usdt_balance += usdt
+            if coin_name != "TRX" and blockch != 'tron':
+                if coin_name != "BNB" and blockch != 'binance-smart-chain':
+                    if coin_name != "ETH" and blockch != 'ethereum':
+                        usdt = float(crypt_api[i]['USDT'])
+                        usdt_balance += usdt
 
     prices = Client(
         keys.key, keys.secret).get_all_tickers()
@@ -195,8 +198,11 @@ def wallet():
     for blockch in wallet_bals:
         for coin_name in wallet_bals[blockch]:
             if coin_name != "USDT":
-                amount = wallet_bals[blockch][coin_name]
-                wallet_coins_bals[coin_name] = amount
+                if coin_name != "TRX" and blockch != 'tron':
+                    if coin_name != "BNB" and blockch != 'binance-smart-chain':
+                        if coin_name != "ETH" and blockch != 'ethereum':
+                            amount = wallet_bals[blockch][coin_name]
+                            wallet_coins_bals[coin_name] = amount
 
     for coin_info in prices:
         if "USDT" in coin_info['symbol']:
