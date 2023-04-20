@@ -615,7 +615,7 @@ def close_all_futures_positons():
 
 @app.route("/close_one_futures_position",  methods=["POST"])
 @cross_origin()
-def close_all_futures_positons():
+def close_one_futures_position():
     try:
         data = request.json()
     except:
