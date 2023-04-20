@@ -613,6 +613,40 @@ def close_all_futures_positons():
     return json.dumps({'positions': positions, "open_orders": open_orders, "balance": balance}), 200, {"ContentType": "application/json"}
 
 
+@app.route("/close_one_futures_position",  methods=["POST"])
+@cross_origin()
+def close_all_futures_positons():
+    try:
+        data = request.json()
+    except:
+        data = request.json
+
+    id = int(data['UserId'])
+    pair = data['pair']
+    side = data['side']
+
+    positions = mongo_db_futures_trading.get_positions(id)
+    limit_positions = mongo_db_futures_trading.get_limit_positions(id)
+
+    coin_poses = positions[pair]
+    qnt = coin_poses[side][1]
+    leverage = coin_poses[side][0]
+    bin.close_part_of_open_position_market(
+        pair, side, qnt, id, leverage)
+
+    for type in limit_positions[pair][side]:
+        if type == "STOP_MARKET"or type == "TAKE_PROFIT_MARKET":
+            for order_id in limit_positions[pair][side][type]:
+                bin.cancel_open_futures_order(pair, order_id)
+
+
+    positions = mongo_db_futures_trading.get_positions(id)
+    open_orders = mongo_db_futures_trading.get_limit_positions(id)
+    balance = mongo_db_futures_trading.get_balance(id)
+
+    return json.dumps({'positions': positions, "open_orders": open_orders, "balance": balance}), 200, {"ContentType": "application/json"}
+
+
 @app.route("/min_open_price",  methods=["POST"])
 @cross_origin()
 def min_open_price():
