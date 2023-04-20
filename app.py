@@ -331,7 +331,7 @@ def futures():
         for side in db_positions[pair]:
             if db_positions[pair][side] == []:
                 del positions[pair][side]
-                
+
     for pair in db_open_orders:
         for side in db_open_orders[pair]:
             if open_orders[pair][side]['LIMIT'] == {}:
@@ -641,10 +641,13 @@ def close_one_futures_position():
     bin.close_part_of_open_position_market(
         pair, side, qnt, id, leverage)
 
-    for type in limit_positions[pair][side]:
-        if type == "STOP_MARKET"or type == "TAKE_PROFIT_MARKET":
-            for order_id in limit_positions[pair][side][type]:
-                bin.cancel_open_futures_order(pair, order_id)
+    try:
+        for type in limit_positions[pair][side]:
+            if type == "STOP_MARKET"or type == "TAKE_PROFIT_MARKET":
+                for order_id in limit_positions[pair][side][type]:
+                    bin.cancel_open_futures_order(pair, order_id)
+    except Exception:
+        pass
 
 
     positions = mongo_db_futures_trading.get_positions(id)
