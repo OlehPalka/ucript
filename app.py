@@ -321,10 +321,17 @@ def futures():
 
     id = int(data['UserId'])
 
-    positions = mongo_db_futures_trading.get_positions(id)
+    db_positions = mongo_db_futures_trading.get_positions(id)
+    positions = copy.deepcopy(db_positions)
     db_open_orders = mongo_db_futures_trading.get_limit_positions(id)
     balance = mongo_db_futures_trading.get_balance(id)
     open_orders = copy.deepcopy(db_open_orders)
+
+    for pair in db_positions:
+        for side in db_positions[pair]:
+            if db_positions[pair][side] == []:
+                del positions[pair][side]
+                
     for pair in db_open_orders:
         for side in db_open_orders[pair]:
             if open_orders[pair][side]['LIMIT'] == {}:
