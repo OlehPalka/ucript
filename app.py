@@ -184,11 +184,8 @@ def wallet():
     usdt_balance = 0
     for i in crypt_api:
         if "USDT" in crypt_api[i]:
-            if coin_name != "TRX" and blockch != 'tron':
-                if coin_name != "BNB" and blockch != 'binance-smart-chain':
-                    if coin_name != "ETH" and blockch != 'ethereum':
-                        usdt = float(crypt_api[i]['USDT'])
-                        usdt_balance += usdt
+            usdt = float(crypt_api[i]['USDT'])
+            usdt_balance += usdt
 
     prices = Client(
         keys.key, keys.secret).get_all_tickers()
@@ -651,15 +648,14 @@ def close_one_futures_position():
         side = "SELL"
     else:
         side = "BUY"
-        
+
     try:
         for type in limit_positions[pair][side]:
-            if type == "STOP_MARKET"or type == "TAKE_PROFIT_MARKET":
+            if type == "STOP_MARKET" or type == "TAKE_PROFIT_MARKET":
                 for order_id in limit_positions[pair][side][type]:
                     bin.cancel_open_futures_order(pair, order_id)
     except Exception:
         pass
-
 
     positions = mongo_db_futures_trading.get_positions(id)
     open_orders = mongo_db_futures_trading.get_limit_positions(id)
