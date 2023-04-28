@@ -258,6 +258,20 @@ class Binance():
             network = "ETH"
         elif block_chain == 'tron':
             network = "TRX"
+        elif block_chain == 'bitcoin':
+            network = "BTC"
+        elif block_chain == 'bitcoin-cash':
+            network = "BCH"
+        elif block_chain == 'dash':
+            network = "DASH"
+        elif block_chain == 'dogecoin':
+            network = "DOGE"
+        elif block_chain == 'litecoin':
+            network = "LTC"
+        elif block_chain == 'zcash':
+            network = "ZEC"
+        elif block_chain == 'xrp':
+            network = "XRP"
         res = self.client.withdraw(
             coin=asset,
             address=address,

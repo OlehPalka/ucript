@@ -19,7 +19,7 @@ def get_balances() -> dict:
     configuration = cryptoapis.Configuration(
         host="https://rest.cryptoapis.io"
     )
-    configuration.api_key["ApiKey"] = "57fe6feb31d60c1e93bc93da18e99aa74c7be466"
+    configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
 
     balances = {}
     with cryptoapis.ApiClient(configuration) as api_client:
@@ -73,7 +73,7 @@ def deposit(blockchain, coin, amount):
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
         )
-        configuration.api_key["ApiKey"] = "57fe6feb31d60c1e93bc93da18e99aa74c7be466"
+        configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
 
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
@@ -102,7 +102,7 @@ def deposit(blockchain, coin, amount):
                 }
                 headers = {
                     'Content-Type': "application/json",
-                    'X-API-Key': "57fe6feb31d60c1e93bc93da18e99aa74c7be466"
+                    'X-API-Key': "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
                 }
 
                 querystring = {"context": "yourExampleString"}
@@ -162,7 +162,7 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
         )
-        configuration.api_key["ApiKey"] = "57fe6feb31d60c1e93bc93da18e99aa74c7be466"
+        configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
 
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
@@ -190,7 +190,7 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                 }
                 headers = {
                     'Content-Type': "application/json",
-                    'X-API-Key': "57fe6feb31d60c1e93bc93da18e99aa74c7be466"
+                    'X-API-Key': "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
                 }
 
                 querystring = {"context": "yourExampleString"}
@@ -238,11 +238,3 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
     except Exception as e:
         print(e)
         pass
-
-
-# print(deposit('tron', 'USDT', 20.8))
-# print(deposit('tron', "USDT", 10))
-# print(deposit('tron', "USDT", 10))
-# print(get_balances())
-# print(withdraw("binance-smart-chain", "0x5c3060ecaf38519a7c14e77d2c20802a6f5e119f", "USDT", 15))
-# print(get_balances())
