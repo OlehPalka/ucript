@@ -514,6 +514,11 @@ def convert():
 
     elif send_point == 'wallet' and destination_point == "futures":
         balance_listener.deposit(blockchain, asset, sum)
+        prev_balance = curr_balance = bin.get_spot_balance(asset)
+        while curr_balance <= prev_balance:
+            time.sleep(60)
+            curr_balance = float(bin.get_spot_balance(asset))
+        bin.transfer_spot_to_futures(sum, "USDT")
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal += sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
@@ -551,11 +556,17 @@ def convert():
     elif send_point == 'invest' and destination_point == "wallet":
         bin_2.withdraw(asset, sum, address, blockchain)
     elif send_point == 'invest' and destination_point == "futures":
+        
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal += sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
-        bin.transfer_spot_to_futures(sum, "USDT")
         bin_2.withdraw("USDT", sum, address, blockchain)
+        prev_balance = curr_balance = bin.get_spot_balance(asset)
+        while curr_balance <= prev_balance:
+            time.sleep(60)
+            curr_balance = float(bin.get_spot_balance(asset))
+        bin.transfer_spot_to_futures(sum, "USDT")
+        
 
     elif send_point == 'spot' and destination_point == 'spot':
         asset_from = data["asset_from"]
