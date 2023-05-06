@@ -8,13 +8,14 @@ from balance_listener import deposit
 
 bin = Binance_1.Binance(keys.key, keys.secret)
 uid = sys.argv[1]
-blockchain = sys.argv[2]
-summ = sys.argv[3]
-asset_from = sys.argv[4]
-asset_to = sys.argv[5]
+blockchain_1 = sys.argv[2]
+blockchain_2 = sys.argv[3]
+summ = sys.argv[4]
+asset_from = sys.argv[5]
+asset_to = sys.argv[6]
 
 prev_balance = curr_balance = float(bin.get_spot_balance(asset_from))
-deposit(blockchain, asset_from, summ)
+deposit(blockchain_1, asset_from, summ)
 
 while curr_balance * 0.99 < prev_balance:
     time.sleep(60)
@@ -35,4 +36,4 @@ token_balance_to = bin.get_spot_balance(asset_to)
 token_summ = min(float(token_balance_to) -
                  float(token_balance_from), bin.get_spot_balance(asset_to))
 
-bin.withdraw(asset_to, token_summ, ADDRESSES[blockchain])
+bin.withdraw(asset_to, token_summ, ADDRESSES[blockchain_2], blockchain_2)
