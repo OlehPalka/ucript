@@ -25,17 +25,30 @@ BINANCE_ADDRESSES = {
     "zcash": "t1YAgEZtCEH6WBFmJRbzjLLGQX1ZPSGD8hU"
 }
 
+# BINANCE_INVEST_ADDRESSES = {
+#     "ethereum": "0x040a7a61cdc22da003f379fc0bc8b4999c0d0bc3",
+#     "binance-smart-chain": "0x040a7a61cdc22da003f379fc0bc8b4999c0d0bc3",
+#     "bitcoin": "1C5juPSVCEM4wWYCm5Fmf5v3rqjU98cene",
+#     "tron": "TH63xpXnGnUAsQh5LEC3r6zDQ3gBx4Dp8E",
+#     "bitcoin-cash": '1C5juPSVCEM4wWYCm5Fmf5v3rqjU98cene',
+#     "dash": "XkGkF1pZFTSd2nDJxhp267sJcRjmXJgSH8",
+#     "dogecoin": "DD9p2mbrAkPNHwpjBRAidVXsnBLZdTS6Gy",
+#     "litecoin": "LaQVsncoFQMtTgxat7yZw3pDv3Q81JpN5X",
+#     "zcash": "t1Y8eUmHosFQSrfncg6Hoqv2UeQTSezNxwi"
+# }
+
 BINANCE_INVEST_ADDRESSES = {
-    "ethereum": "0x040a7a61cdc22da003f379fc0bc8b4999c0d0bc3",
-    "binance-smart-chain": "0x040a7a61cdc22da003f379fc0bc8b4999c0d0bc3",
-    "bitcoin": "1C5juPSVCEM4wWYCm5Fmf5v3rqjU98cene",
-    "tron": "TH63xpXnGnUAsQh5LEC3r6zDQ3gBx4Dp8E",
-    "bitcoin-cash": '1C5juPSVCEM4wWYCm5Fmf5v3rqjU98cene',
-    "dash": "XkGkF1pZFTSd2nDJxhp267sJcRjmXJgSH8",
-    "dogecoin": "DD9p2mbrAkPNHwpjBRAidVXsnBLZdTS6Gy",
-    "litecoin": "LaQVsncoFQMtTgxat7yZw3pDv3Q81JpN5X",
-    "zcash": "t1Y8eUmHosFQSrfncg6Hoqv2UeQTSezNxwi"
+    "ethereum": "0xc0b3493b6b148fe68e38f7ce92619b41dbb88466",
+    "binance-smart-chain": "0xc0b3493b6b148fe68e38f7ce92619b41dbb88466",
+    "bitcoin": "12xPmhF436bVaCarp2TRjPspNh72CvAeUJ",
+    "tron": "TQtganuFQM73ZrBTZV5TXG6Xu5ju5Kdyaq",
+    "bitcoin-cash": '12xPmhF436bVaCarp2TRjPspNh72CvAeUJ',
+    "dash": "XsewV2iENj33Kqjx7ev6oNss79Sawz1ViY",
+    "dogecoin": "DJrbUGi4FoGshXZUv9Hw6taNhSV5XEoSKV",
+    "litecoin": "LezCnRakszzvSmTe35wRT21ftSke52oYyu",
+    "zcash": "t1d7shZvqyNzZbqdHxmS2feaBeT1McxhoQt"
 }
+
 
 SUPPORTED_COINS = {
     "bitcoin": [
