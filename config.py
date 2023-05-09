@@ -27,15 +27,15 @@ ADDRESSES = {
 # }
 
 BINANCE_ADDRESSES = {
-    "ethereum": "0x37e5428984b210122b6e2039ed503c68c78f209f",
-    "binance-smart-chain": "0x5c3060ecaf38519a7c14e77d2c20802a6f5e119f",
-    "bitcoin": "1PmYQizgN7NeonuTHDBMu5NdqSLXUNcqRF",
-    "tron": "TEkkp21RLA17kBWJyYN9CXXH9Hip6kC2D6",
-    "bitcoin-cash": '1PmYQizgN7NeonuTHDBMu5NdqSLXUNcqRF',
-    "dash": "XkiLhkmQhfX6RE3qQAPmJtaK7r7e4LRKXq",
-    "dogecoin": "DJsjyUZAFU2RXCmCQLEqrWWPhdLuCwjf8b",
-    "litecoin": "Lf6P9CFPrM3GbvVNHZZBzDEW1tMkr2Whss",
-    "zcash": "t1dAxDkyZ6eo9SSmnMDHcG1RSCTxeaQWQR4"
+    "ethereum": "0xaa27aaa88728ec40cf8a6f96f30585a681108880",
+    "binance-smart-chain": "0xaa27aaa88728ec40cf8a6f96f30585a681108880",
+    "bitcoin": "18AdFQNMBK34n5vV5uGQHsDGQCL6t357md",
+    "tron": "TGoFmSaSf3baXHwpqvUkgb8ju3mY5byDFP",
+    "bitcoin-cash": '18AdFQNMBK34n5vV5uGQHsDGQCL6t357md',
+    "dash": "XstH3ef9gTDy71X8cuMh1rh1iMkoQYu6Hu",
+    "dogecoin": "DKQ8VcdyWYvR5dUXqjnzqC5XJh4QfvPGuT",
+    "litecoin": "LgNPiSxKgekcPH2QCXfDuNmxgTx7awoFiM",
+    "zcash": "t1dhjacFXKAjCmepBrFB5SZ15uw9BSyMw5Y"
 }
 
 # BINANCE_ADDRESSES = {
