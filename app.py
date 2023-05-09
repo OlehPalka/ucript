@@ -571,12 +571,16 @@ def convert():
     elif send_point == 'spot' and destination_point == 'spot':
         asset_from = data["asset_from"]
         asset_to = data["asset_to"]
-        balance_from = bin.get_spot_balance('USDT')
-        bin.open_spot_position(asset_from + 'USDT', 'SELL', sum, 'MARKET', id)
-        time.sleep(3)
-        balance_to = bin.get_spot_balance('USDT')
-        qty = (float(balance_to) - float(balance_from)) / float(bin.client.latest_information_for_symbol(
-            symbol=asset_to + 'USDT')["result"][0]["last_price"]) * 0.99
+        if asset_from != 'USDT':
+            balance_from = bin.get_spot_balance('USDT')
+            bin.open_spot_position(asset_from + 'USDT', 'SELL', sum, 'MARKET', id)
+            time.sleep(3)
+            balance_to = bin.get_spot_balance('USDT')
+            qty = (float(balance_to) - float(balance_from)) / float(bin.client.latest_information_for_symbol(
+                symbol=asset_to + 'USDT')["result"][0]["last_price"]) * 0.99
+        else:
+            qty = float(sum) / float(bin.client.latest_information_for_symbol(
+                symbol=asset_to + 'USDT')["result"][0]["last_price"]) * 0.99
         bin.open_spot_position(asset_to + 'USDT', 'BUY', qty, 'MARKET', id)
     elif send_point == 'wallet' and destination_point == 'wallet':
         asset_from = data["asset_from"]
