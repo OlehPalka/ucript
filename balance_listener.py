@@ -30,19 +30,21 @@ def get_balances() -> dict:
             wallet_id = "640e187431f4810007f0174d"
 
             # Get Address Balance
-            api_response = api_instance.get_wallet_asset_details(
+            api_response = api_instance.list_deposit_addresses(
                 blockchain, network, wallet_id, context="")["_data_store"]
-
-            coin, amount = api_response["data"]["item"]["confirmed_balance"][
-                "unit"], api_response["data"]["item"]["confirmed_balance"]["amount"]
+            # print(api_response)
 
             balances[blockchain] = {}
 
-            # if coin not in ("ETH", "BNB", "TRX", "XRP"):
-            balances[blockchain][coin] = amount
+            for item in api_response["data"]["items"]:
+                if item["address"] in ADDRESSES.values():
+                    balances[blockchain][item["confirmed_balance"]
+                                         ["unit"]] = item["confirmed_balance"]["amount"]
 
-            for coin in api_response["data"]["item"]["fungible_tokens"]:
-                balances[blockchain][coin["symbol"]] = coin["confirmed_amount"]
+                    for coin in item["fungible_tokens"]:
+                        print(coin)
+                        balances[blockchain][coin["symbol"]
+                                             ] = coin["amount"]
 
     return balances
 
