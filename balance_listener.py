@@ -19,7 +19,7 @@ def get_balances() -> dict:
     configuration = cryptoapis.Configuration(
         host="https://rest.cryptoapis.io"
     )
-    configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
+    configuration.api_key["ApiKey"] = "7a341c2bab235617a58cefdb3e5286edef9cb506"
 
     balances = {}
     with cryptoapis.ApiClient(configuration) as api_client:
@@ -30,21 +30,19 @@ def get_balances() -> dict:
             wallet_id = "640e187431f4810007f0174d"
 
             # Get Address Balance
-            api_response = api_instance.list_deposit_addresses(
+            api_response = api_instance.get_wallet_asset_details(
                 blockchain, network, wallet_id, context="")["_data_store"]
-            # print(api_response)
+
+            coin, amount = api_response["data"]["item"]["confirmed_balance"][
+                "unit"], api_response["data"]["item"]["confirmed_balance"]["amount"]
 
             balances[blockchain] = {}
 
-            for item in api_response["data"]["items"]:
-                if item["address"] in ADDRESSES.values():
-                    balances[blockchain][item["confirmed_balance"]
-                                         ["unit"]] = item["confirmed_balance"]["amount"]
+            # if coin not in ("ETH", "BNB", "TRX", "XRP"):
+            balances[blockchain][coin] = amount
 
-                    for coin in item["fungible_tokens"]:
-                        print(coin)
-                        balances[blockchain][coin["symbol"]
-                                             ] = coin["amount"]
+            for coin in api_response["data"]["item"]["fungible_tokens"]:
+                balances[blockchain][coin["symbol"]] = coin["confirmed_amount"]
 
     return balances
 
@@ -75,7 +73,7 @@ def deposit(blockchain, coin, amount):
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
         )
-        configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
+        configuration.api_key["ApiKey"] = "7a341c2bab235617a58cefdb3e5286edef9cb506"
 
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
@@ -104,7 +102,7 @@ def deposit(blockchain, coin, amount):
                 }
                 headers = {
                     'Content-Type': "application/json",
-                    'X-API-Key': "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
+                    'X-API-Key': "7a341c2bab235617a58cefdb3e5286edef9cb506"
                 }
 
                 querystring = {"context": "yourExampleString"}
@@ -164,7 +162,7 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
         configuration = cryptoapis.Configuration(
             host="https://rest.cryptoapis.io"
         )
-        configuration.api_key["ApiKey"] = "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
+        configuration.api_key["ApiKey"] = "7a341c2bab235617a58cefdb3e5286edef9cb506"
 
         with cryptoapis.ApiClient(configuration) as api_client:
             api_instance = transactions_api.TransactionsApi(api_client)
@@ -192,7 +190,7 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
                 }
                 headers = {
                     'Content-Type': "application/json",
-                    'X-API-Key': "bcd34bd6c01aa30c00c9bcacbf44e24bd4af31ac"
+                    'X-API-Key': "7a341c2bab235617a58cefdb3e5286edef9cb506"
                 }
 
                 querystring = {"context": "yourExampleString"}
@@ -240,3 +238,5 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
     except Exception as e:
         print(e)
         pass
+
+print(get_balances())
