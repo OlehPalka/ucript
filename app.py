@@ -15,7 +15,7 @@ import os
 import psycopg2
 from binance import Client
 import time
-from  config import *
+from config import *
 bin = Binance_1.Binance(keys.key, keys.secret)
 
 app = Flask(__name__)
@@ -548,9 +548,19 @@ def convert():
     elif send_point == 'spot' and destination_point == "invest":
         address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         bin.withdraw(asset, sum, address, blockchain_2)
+        prev_balance = curr_balance = bin_2.get_spot_balance(asset)
+        while curr_balance <= prev_balance:
+            time.sleep(60)
+            curr_balance = float(bin.get_spot_balance(asset))
+        bin_2.transfer_spot_to_futures(sum, "USDT")
     elif send_point == 'wallet' and destination_point == "invest":
         address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         balance_listener.withdraw(blockchain_1, address, asset, sum)
+        prev_balance = curr_balance = bin_2.get_spot_balance(asset)
+        while curr_balance <= prev_balance:
+            time.sleep(60)
+            curr_balance = float(bin.get_spot_balance(asset))
+        bin_2.transfer_spot_to_futures(sum, "USDT")
     elif send_point == 'futures' and destination_point == "invest":
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal -= sum
@@ -558,6 +568,11 @@ def convert():
         bin.transfer_futures_to_spot(sum, "USDT")
         address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         bin.withdraw("USDT", sum, address, blockchain_1)
+        prev_balance = curr_balance = bin_2.get_spot_balance(asset)
+        while curr_balance <= prev_balance:
+            time.sleep(60)
+            curr_balance = float(bin.get_spot_balance(asset))
+        bin_2.transfer_spot_to_futures(sum, "USDT")
     elif send_point == 'invest' and destination_point == "spot":
         address = BINANCE_ADDRESSES[blockchain_2]
         bin_2.withdraw(asset, sum, address, blockchain_1)
@@ -597,6 +612,8 @@ def convert():
         asset_to = data["asset_to"]
         os.system(
             f'python3 convert_wallet.py {id} {blockchain_1} {blockchain_2} {sum} {asset_from} {asset_to}')
+    elif send_point == "pidar":
+        bin_2.transfer_spot_to_futures(9.6, "USDT")
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
