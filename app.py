@@ -481,7 +481,8 @@ def invest():
 
     bin_2 = Client(
         'lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX', 'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp')
-
+    print(futures_bal=bin_2.futures_account_balance(
+        recvWindow=50000))
     futures_bal = bin_2.futures_account_balance(recvWindow=50000)[7]['balance']
     return json.dumps({"balance": futures_bal}), 200, {"ContentType": "application/json"}
 
