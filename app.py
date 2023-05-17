@@ -479,69 +479,13 @@ def invest():
     except:
         data = request.json
 
-    id = int(data['UserId'])
-
     bin_2 = Client(
         'lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX', 'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp')
-
-    # all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
-
-    binance_balances = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
-                              'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_account()['balances']
-
-    prices = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
-                    'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_all_tickers()
-
-    all_coins_bal = {}
-    for i in binance_balances:
-        if float(i["free"]) > 0:
-            all_coins_bal[i['asset']] = i["free"]
-
-    # for coin_info in binance_balances:
-    #     coin_name = coin_info['asset']
-    #     if coin_name == "USDT":
-    #         amount = float(coin_info['free'])
-    #         spot_usdt_bal = float(coin_info['free'])
-    #         all_coins_bal[coin_name] = amount
-    #     else:
-    #         amount = float(coin_info['free'])
-    #         if amount > 0:
-    #             all_coins_bal[coin_name] = f"{amount:.9f}"
-
-    # mongo_db_spot_trading.change_all_different_coins_balance(id, all_coins_bal)
-
-    # for coin_info in binance_balances:
-    #     coin_name = coin_info['asset']
-    #     amount = float(coin_info['free'])
-    #     try:
-    #         if amount > 0:
-    #             pair = coin_name + "USDT"
-    #             key = f"https://api.binance.com/api/v3/ticker/price?symbol={pair}"
-    #             data = requests.get(key)
-    #             data = data.json()
-    #             cur_price = float(data['price'])
-    #             spot_usdt_bal += cur_price * amount
-    #     except Exception:
-    #         continue
-    try:
-        spot_usdt_bal = float(all_coins_bal["USDT"])
-    except Exception:
-        spot_usdt_bal = 0
-
-    for coin_info in prices:
-        if "USDT" in coin_info['symbol']:
-            coin = coin_info['symbol'].replace("USDT", "")
-            if coin in all_coins_bal:
-                price = float(coin_info['price'])
-                amount = float(all_coins_bal[coin])
-                spot_usdt_bal += price * amount
-
-    all_coins = []
-    for i in all_coins_bal:
-        all_coins.append({"symbol": i,
-                          "balance": all_coins_bal[i]})
-
-    return json.dumps({"balance": spot_usdt_bal}), 200, {"ContentType": "application/json"}
+    print(bin_2.futures_account_balance(
+        recvWindow=50000))
+    print(bin_2.futures_account_balance(recvWindow=50000))
+    futures_bal = bin_2.futures_account_balance(recvWindow=50000)[8]['balance']
+    return json.dumps({"balance": futures_bal}), 200, {"ContentType": "application/json"}
 
 
 @app.route("/convert", methods=["POST"])
