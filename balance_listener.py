@@ -238,5 +238,3 @@ def withdraw(blockchain, withdrawal_address, coin, amount):
     except Exception as e:
         print(e)
         pass
-
-print(get_balances())
