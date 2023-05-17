@@ -15,6 +15,7 @@ import os
 import psycopg2
 from binance import Client
 import time
+from  config import *
 bin = Binance_1.Binance(keys.key, keys.secret)
 
 app = Flask(__name__)
@@ -539,24 +540,32 @@ def convert():
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
+        address = ADDRESSES[blockchain_2]
         bin.withdraw("USDT", sum, address, blockchain_2)
     elif send_point == 'spot' and destination_point == "wallet":
+        address = ADDRESSES[blockchain_2]
         bin.withdraw(asset, sum, address, blockchain_2)
     elif send_point == 'spot' and destination_point == "invest":
+        address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         bin.withdraw(asset, sum, address, blockchain_2)
     elif send_point == 'wallet' and destination_point == "invest":
+        address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         balance_listener.withdraw(blockchain_1, address, asset, sum)
     elif send_point == 'futures' and destination_point == "invest":
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal -= sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin.transfer_futures_to_spot(sum, "USDT")
+        address = BINANCE_INVEST_ADDRESSES[blockchain_2]
         bin.withdraw("USDT", sum, address, blockchain_1)
     elif send_point == 'invest' and destination_point == "spot":
+        address = BINANCE_ADDRESSES[blockchain_2]
         bin_2.withdraw(asset, sum, address, blockchain_1)
     elif send_point == 'invest' and destination_point == "wallet":
+        address = ADDRESSES[blockchain_2]
         bin_2.withdraw(asset, sum, address, blockchain_2)
     elif send_point == 'invest' and destination_point == "futures":
+        address = BINANCE_ADDRESSES[blockchain_2]
 
         futures_bal = float(mongo_db_futures_trading.get_balance(id))
         futures_bal += sum
