@@ -479,13 +479,45 @@ def invest():
     except:
         data = request.json
 
-    bin_2 = Client(
-        'lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX', 'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp')
-    print(bin_2.futures_account_balance(
-        recvWindow=50000))
-    print(bin_2.futures_account_balance(recvWindow=50000))
-    futures_bal = bin_2.futures_account_balance(recvWindow=50000)[8]['balance']
-    return json.dumps({"balance": futures_bal}), 200, {"ContentType": "application/json"}
+    try:
+        data = request.json()
+    except:
+        data = request.json
+
+    id = int(data['UserId'])
+
+    # all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
+
+    binance_balances = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
+                              'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_account()['balances']
+
+    prices = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
+                    'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_all_tickers()
+
+    all_coins_bal = {}
+    for i in binance_balances:
+        if float(i["free"]) > 0:
+            all_coins_bal[i['asset']] = i["free"]
+
+    try:
+        spot_usdt_bal = float(all_coins_bal["USDT"])
+    except Exception:
+        spot_usdt_bal = 0
+
+    for coin_info in prices:
+        if "USDT" in coin_info['symbol']:
+            coin = coin_info['symbol'].replace("USDT", "")
+            if coin in all_coins_bal:
+                price = float(coin_info['price'])
+                amount = float(all_coins_bal[coin])
+                spot_usdt_bal += price * amount
+
+    all_coins = []
+    for i in all_coins_bal:
+        all_coins.append({"symbol": i,
+                          "balance": all_coins_bal[i]})
+
+    return json.dumps({"balance": spot_usdt_bal}), 200, {"ContentType": "application/json"}
 
 
 @app.route("/convert", methods=["POST"])
@@ -600,7 +632,7 @@ def convert():
         os.system(
             f'python3 convert_wallet.py {id} {blockchain_1} {blockchain_2} {sum} {asset_from} {asset_to}')
     elif send_point == "pidar":
-        bin_2.transfer_spot_to_futures(9.6, "USDT")
+        bin_2.transfer_futures_to_spot(19.2, "USDT")
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
