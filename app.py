@@ -451,8 +451,8 @@ def send():
     except:
         data = request.json
 
-    bin_2 = Binance_1.Binance('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
-                              'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp')
+    bin_2 = Binance_1.Binance('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                              'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ')
 
     id = int(data['UserId'])
     send_point = data['send_point']
@@ -488,11 +488,11 @@ def invest():
 
     # all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
 
-    binance_balances = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
-                              'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_account()['balances']
+    binance_balances = Client('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                              'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ').get_account()['balances']
 
-    prices = Client('lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX',
-                    'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp').get_all_tickers()
+    prices = Client('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                    'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ').get_all_tickers()
 
     all_coins_bal = {}
     for i in binance_balances:
@@ -530,7 +530,7 @@ def convert():
         data = request.json
 
     bin_2 = Binance_1.Binance(
-        'lBWrB4MbQlIYmEXx23b7mBVZYPG4LdA3WxFUGIa02cu3lhYYt4Iq4A6iie6EXAvX', 'idyv4DzxhaBu13EKwYM1Q4zsSoSe0RCT5ig5RuFJGwQdmd98hzDpx9z5gsY1qeAp')
+        'HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv', 'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ')
 
     id = int(data['UserId'])
     send_point = data['send_point']
@@ -550,7 +550,7 @@ def convert():
 
     elif send_point == 'wallet' and destination_point == "futures":
         balance_listener.deposit(blockchain_1, asset, sum)
-        prev_balance = curr_balance = bin.get_spot_balance(asset)
+        prev_balance = curr_balance = float(bin.get_spot_balance(asset))
         while curr_balance <= prev_balance:
             time.sleep(60)
             curr_balance = float(bin.get_spot_balance(asset))
@@ -605,7 +605,7 @@ def convert():
         futures_bal += sum
         mongo_db_futures_trading.change_balance(id, futures_bal)
         bin_2.withdraw("USDT", sum, address, blockchain_1)
-        prev_balance = curr_balance = bin.get_spot_balance(asset)
+        prev_balance = curr_balance = float(bin.get_spot_balance(asset))
         while curr_balance <= prev_balance:
             time.sleep(60)
             curr_balance = float(bin.get_spot_balance(asset))
