@@ -22,10 +22,11 @@ while curr_balance * 0.99 < prev_balance:
     curr_balance = float(bin.get_spot_balance(asset_from))
 
 summ = min(summ, curr_balance)
-balance_from = bin.get_spot_balance('USDT')
-bin.open_spot_position(asset_from + 'USDT', 'SELL', summ, 'MARKET', uid)
-time.sleep(3)
-balance_to = bin.get_spot_balance('USDT')
+if asset_from != "USDT":
+    balance_from = bin.get_spot_balance('USDT')
+    bin.open_spot_position(asset_from + 'USDT', 'SELL', summ, 'MARKET', uid)
+    time.sleep(3)
+    balance_to = bin.get_spot_balance('USDT')
 qty = (float(balance_to) - float(balance_from)) / float(bin.client.latest_information_for_symbol(
     symbol=asset_to + 'USDT')["result"][0]["last_price"]) * 0.99
 
