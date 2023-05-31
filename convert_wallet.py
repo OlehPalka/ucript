@@ -10,7 +10,7 @@ bin = Binance_1.Binance(keys.key, keys.secret)
 uid = sys.argv[1]
 blockchain_1 = sys.argv[2]
 blockchain_2 = sys.argv[3]
-summ = sys.argv[4]
+summ = float(sys.argv[4])
 asset_from = sys.argv[5]
 asset_to = sys.argv[6]
 
