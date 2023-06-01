@@ -22,8 +22,9 @@ while curr_balance * 0.99 < prev_balance:
     curr_balance = float(bin.get_spot_balance(asset_from))
 
 summ = min(summ, curr_balance)
+balance_from = bin.get_spot_balance('USDT')
 if asset_from != "USDT":
-    balance_from = bin.get_spot_balance('USDT')
+
     bin.open_spot_position(asset_from + 'USDT', 'SELL', summ, 'MARKET', uid)
     time.sleep(3)
 balance_to = bin.get_spot_balance('USDT')
