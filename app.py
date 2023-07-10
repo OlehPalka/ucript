@@ -309,8 +309,10 @@ def openSpotOrder():
     data = data.json()
     cur_price = float(data['price'])
     qnt = money/cur_price
-
-    bin.open_spot_position(pair, side, qnt, 'MARKET', id)
+    if side == "BUY":
+        bin.open_spot_position(pair, side, qnt, 'MARKET', id)
+    else:
+        bin.open_spot_position(pair, side, money, 'MARKET', id)
 
     return json.dumps({}), 200, {"ContentType": "application/json"}
 
@@ -451,8 +453,8 @@ def send():
     except:
         data = request.json
 
-    bin_2 = Binance_1.Binance('...',
-                              '...')
+    bin_2 = Binance_1.Binance('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                              'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ')
 
     id = int(data['UserId'])
     send_point = data['send_point']
@@ -488,11 +490,11 @@ def invest():
 
     # all_coins_bal = mongo_db_spot_trading.get_different_coins_balances(id)
 
-    binance_balances = Client('...',
-                              '...').get_account()['balances']
+    binance_balances = Client('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                              'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ').get_account()['balances']
 
-    prices = Client('...',
-                    '...').get_all_tickers()
+    prices = Client('HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv',
+                    'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ').get_all_tickers()
 
     all_coins_bal = {}
     for i in binance_balances:
@@ -530,7 +532,7 @@ def convert():
         data = request.json
 
     bin_2 = Binance_1.Binance(
-        '...', '...')
+        'HDbdWdXbjsFhOU9StXYOxyF48V9CnXcMozcIeLzfAgaXOUkc4pOww8iwZOhXFhRv', 'AB47fUU1oclNFcllZvxvqLEqRGH2EDGUzyoxczDhvwtTu9ZIdbfQY2WNrlNu8GwZ')
 
     id = int(data['UserId'])
     send_point = data['send_point']
