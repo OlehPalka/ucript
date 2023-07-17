@@ -6,13 +6,12 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import *
 
 settings = {
-    'pguser': 'bgqfwrthmhaxdo',
-    'pgpasswd': "4e9542d9d383caea9be6b113a9b5c36674aa8ea9c27b8f5f936b49dfad8ba7c0",
-    'pghost': "ec2-3-93-160-246.compute-1.amazonaws.com",
+    'pguser': 'rgmbmmlrzdwhky',
+    'pgpasswd': "67c3b1234eb826883d973ce49927fec57397e1281db237ff7f3cc2ed82e0ed9e",
+    'pghost': "ec2-3-233-77-220.compute-1.amazonaws.com",
     'pgport': 5432,
-    'pgdb': 'da4dl7gkf682df'
+    'pgdb': 'daeu49lu2kftel'
 }
-
 
 log = logging.getLogger(__name__)
 
